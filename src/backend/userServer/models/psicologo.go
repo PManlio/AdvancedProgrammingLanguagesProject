@@ -1,6 +1,6 @@
 package models
 
 type Psicologo struct {
-	Utente   *Utente
+	Utente   Utente
 	Pazienti []Paziente
 }

@@ -6,11 +6,14 @@ import (
 	"log"
 	"net/http"
 
+	"./controllers"
 	"./models"
+
+	"github.com/gorilla/mux"
 )
 
 func homeRoot(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Main Endpoint root /")
+	json.NewEncoder(w).Encode("Main Endpoint root /")
 }
 
 func getUser(w http.ResponseWriter, r *http.Request) {
@@ -19,6 +22,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 		Nome:      "a",
 		Cognome:   "b",
 		Email:     "c@d.e",
+		Password:  "abcde",
 		Citta:     "f",
 		Cellulare: "123",
 		Genere:    "g",
@@ -29,12 +33,19 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleRequests() {
-	http.HandleFunc("/", homeRoot)
-	http.HandleFunc("/user", getUser)
+
+	requestHandler := mux.NewRouter().StrictSlash(true)
+	pazienteSubrouter := requestHandler.PathPrefix("/paziente").Subrouter()
+	// psicologoSubrouter := requestHandler.PathPrefix("/psicologo").Subrouter()
+
+	requestHandler.HandleFunc("/", homeRoot)
+	requestHandler.HandleFunc("/getUser", getUser)
+
+	controllers.PazientHandler(pazienteSubrouter)
 
 	// log.Fatal è l'equivalente di Print(), ma seguita da
 	// una chiamata a os.Exit(1)
-	log.Fatal(http.ListenAndServe(":8085", nil))
+	log.Fatal(http.ListenAndServe(":8085", requestHandler))
 }
 
 func main() {

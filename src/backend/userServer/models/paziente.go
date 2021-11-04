@@ -1,6 +1,6 @@
 package models
 
 type Paziente struct {
-	Utente    *Utente
+	Utente    Utente
 	PatientOf []string
 }

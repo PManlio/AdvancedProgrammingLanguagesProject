@@ -5,6 +5,7 @@ type Utente struct {
 	Nome      string
 	Cognome   string
 	Email     string
+	Password  string
 	Citta     string
 	Cellulare string
 	Genere    string
