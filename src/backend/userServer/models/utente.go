@@ -1,12 +1,12 @@
 package models
 
 type Utente struct {
-	CodFisc   string
-	Nome      string
-	Cognome   string
-	Email     string
-	Password  string
-	Citta     string
-	Cellulare string
-	Genere    string
+	CodFisc   string `json: "codFisc"`
+	Nome      string `json: "nome"`
+	Cognome   string `json: "cognome"`
+	Email     string `json: "emai"`
+	Password  string `json: "password"`
+	Citta     string `json: "citta"`
+	Cellulare string `json: "cellulare"`
+	Genere    string `json: "genere"`
 }

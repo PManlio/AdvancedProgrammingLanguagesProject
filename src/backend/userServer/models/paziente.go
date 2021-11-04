@@ -1,6 +1,6 @@
 package models
 
 type Paziente struct {
-	Utente    Utente
-	PatientOf []string
+	Utente    Utente   `json:"utente"`
+	PatientOf []string `json:"patientOf"`
 }

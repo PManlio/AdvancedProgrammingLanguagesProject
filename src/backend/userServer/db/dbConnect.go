@@ -11,7 +11,7 @@ import (
 
 func readEnv() map[string]string {
 	var env map[string]string
-	env, err := godotenv.Read("../.env")
+	env, err := godotenv.Read("./.env")
 
 	if err != nil {
 		log.Fatal("Errore nel caricare il file .env:", err)
