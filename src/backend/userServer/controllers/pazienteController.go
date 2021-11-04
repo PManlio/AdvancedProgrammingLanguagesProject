@@ -1,14 +1,15 @@
 package controllers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
 
-	sql "../db"
-
+	myDBpckg "../db"
 	"../models"
+	"../utils"
 
 	"github.com/gorilla/mux"
 )
@@ -31,42 +32,60 @@ func ping(w http.ResponseWriter, r *http.Request) {
 }
 
 // Crea Paziente:
-func CreatePazient(w http.ResponseWriter, r *http.Request) int {
+func CreatePazient(w http.ResponseWriter, r *http.Request) {
 	var paziente models.Paziente
-
 	err := json.NewDecoder(r.Body).Decode(&paziente)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		return http.StatusBadRequest
+		return
 	}
 
-	fmt.Println(paziente)
+	// fmt.Println(paziente)
+	paziente.Utente.Password = utils.Encrypt(paziente.Utente.Password)
+	// fmt.Println(paziente)
 
-	db := sql.ConnectToDB()
+	db := myDBpckg.ConnectToDB()
 
-	insert1, err1 := db.Query("INSERT INTO utente(codFisc, nome, cognome, email, password, citta, cellulare, genere) " +
-		"VALUES(" + "'" + paziente.Utente.CodFisc + "'" + ", " + "'" + paziente.Utente.Nome + "'" +
-		", " + "'" + paziente.Utente.Cognome + "'" + ", " + "'" + paziente.Utente.Email + "'" + ", " +
-		"'" + paziente.Utente.Password + "'" + ", " + "'" + paziente.Utente.Citta + "'" + ", " +
-		"'" + paziente.Utente.Cellulare + "'" + ", " + "'" + paziente.Utente.Genere + "');")
-	if err1 != nil {
-		fmt.Println("--------\n\nun errore di query è avvenuto:", err)
-		return http.StatusInternalServerError
+	// CONTROLLO SU TABELLA PER VERIFICARE ESISTENZA
+	var isPresent bool
+
+	errCheck := db.QueryRow("SELECT codFisc FROM utente INNER JOIN paziente ON utente.codFisc = paziente.codFisc " +
+		"WHERE paziente.codFisc = '" + paziente.Utente.CodFisc + "'").Scan(&isPresent)
+
+	if errCheck != nil && errCheck != sql.ErrNoRows {
+
+		http.Error(w, "row exists already", http.StatusForbidden)
+
+	} else if !isPresent {
+
+		insert1, err1 := db.Query("INSERT INTO utente(codFisc, nome, cognome, email, password, citta, cellulare, genere) " +
+			"VALUES(" + "'" + paziente.Utente.CodFisc + "'" + ", " + "'" + paziente.Utente.Nome + "'" +
+			", " + "'" + paziente.Utente.Cognome + "'" + ", " + "'" + paziente.Utente.Email + "'" + ", " +
+			"'" + paziente.Utente.Password + "'" + ", " + "'" + paziente.Utente.Citta + "'" + ", " +
+			"'" + paziente.Utente.Cellulare + "'" + ", " + "'" + paziente.Utente.Genere + "');")
+		if err1 != nil {
+			fmt.Println("--------\n\nun errore di query è avvenuto:", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		insert2, err2 := db.Query("INSERT INTO paziente(codFisc, patientOf) VALUES(" + "'" + paziente.Utente.CodFisc + "'" + ", " +
+			"'" + strings.Join(paziente.PatientOf, ",") + "');")
+		if err2 != nil {
+			fmt.Println("--------\n\nun errore di query è avvenuto:", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		defer insert1.Close()
+		defer insert2.Close()
+
+		json.NewEncoder(w).Encode(http.StatusOK)
+
 	}
 
-	insert2, err2 := db.Query("INSERT INTO paziente(codFisc, patientOf) VALUES(" + "'" + paziente.Utente.CodFisc + "'" + ", " +
-		"'" + strings.Join(paziente.PatientOf, ",") + "');")
-	if err2 != nil {
-		fmt.Println("--------\n\nun errore di query è avvenuto:", err)
-		return http.StatusInternalServerError
-	}
-
-	defer insert1.Close()
-	defer insert2.Close()
-	defer sql.CloseConnectionToDB(db)
-
-	return http.StatusOK
+	defer myDBpckg.CloseConnectionToDB(db)
 }
 
 // Leggi Paziente -
