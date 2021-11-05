@@ -17,9 +17,8 @@ import (
 func PazientHandler(pazientRouter *mux.Router) {
 	pazientRouter.HandleFunc("/ping", ping)
 	pazientRouter.HandleFunc("/create", CreatePazient).Methods("POST")
+	pazientRouter.HandleFunc("/getbycodfisc", getPazientByCodFisc).Methods("GET")
 }
-
-// ---- CRUD Paziente ----
 
 // simple Ping
 func ping(w http.ResponseWriter, r *http.Request) {
@@ -31,8 +30,11 @@ func ping(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(ping)
 }
 
+// ---- CRUD Paziente ----
+
 // Crea Paziente:
 func CreatePazient(w http.ResponseWriter, r *http.Request) {
+
 	var paziente models.Paziente
 	err := json.NewDecoder(r.Body).Decode(&paziente)
 
@@ -91,6 +93,42 @@ func CreatePazient(w http.ResponseWriter, r *http.Request) {
 // Leggi Paziente -
 //	- Get Pazient By -
 //		- Codice Fiscale:
+func getPazientByCodFisc(w http.ResponseWriter, r *http.Request) {
+	var codFisc struct {
+		CodFisc string `json:"codFisc"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&codFisc)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	db := myDBpckg.ConnectToDB()
+	defer myDBpckg.CloseConnectionToDB(db)
+
+	var paziente models.Paziente
+
+	query, err := db.Query("SELECT codFisc, nome, cognome, email, citta, cellulare, genere, patientOf " +
+		"FROM utente INNER JOIN paziente USING (codFisc) WHERE " +
+		"codFisc = " + "'" + codFisc.CodFisc + "' LIMIT 1;")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+	}
+
+	// Scan() non può essere eseguita se prima non viene invocata Next()
+	for query.Next() {
+		// chiaramente nella query non ho inserito la password; il campo nella struct sarà una stringa vuota
+		query.Scan(&paziente.Utente.CodFisc, &paziente.Utente.Nome, &paziente.Utente.Cognome,
+			&paziente.Utente.Email, &paziente.Utente.Citta,
+			&paziente.Utente.Cellulare, &paziente.Utente.Genere, &paziente.PatientOf)
+	}
+
+	defer query.Close()
+
+	json.NewEncoder(w).Encode(paziente)
+}
+
 //		- Mail:
 //		- Numero Telefono:
 
