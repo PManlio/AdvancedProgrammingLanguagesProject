@@ -21,9 +21,10 @@ func PazientHandler(pazientRouter *mux.Router) {
 	// CRUD paziente:
 	pazientRouter.HandleFunc("/create", CreatePazient).Methods("POST")
 	pazientRouter.HandleFunc("/getbycodfisc", getPazientByCodFisc).Methods("GET")
-	pazientRouter.HandleFunc("/getbyemail", getPazientByMail).Methods("GET")
+	pazientRouter.HandleFunc("/getbyemail", getPazientByEmail).Methods("GET")
 	pazientRouter.HandleFunc("/getbyphonenumber", getPazientByPhoneNumber).Methods("GET")
 	pazientRouter.HandleFunc("/getallpatients", getAllPatients).Methods("GET")
+	pazientRouter.HandleFunc("/deletepatientbyemail", deletePatientByEmail).Methods("DELETE")
 }
 
 // simple Ping
@@ -129,6 +130,12 @@ func getPazientByCodFisc(w http.ResponseWriter, r *http.Request) {
 		query.Scan(&paziente.Utente.CodFisc, &paziente.Utente.Nome, &paziente.Utente.Cognome,
 			&paziente.Utente.Email, &paziente.Utente.Citta,
 			&paziente.Utente.Cellulare, &paziente.Utente.Genere, &tempList)
+
+	}
+
+	if paziente.Utente.CodFisc == "" {
+		http.Error(w, "Paziente non trovato", http.StatusNotFound)
+		return
 	}
 
 	// TODO: testare PatientOf[], perché sicuramente il bastardo lo restituisce come una stringa
@@ -140,7 +147,7 @@ func getPazientByCodFisc(w http.ResponseWriter, r *http.Request) {
 }
 
 //		- Mail:
-func getPazientByMail(w http.ResponseWriter, r *http.Request) {
+func getPazientByEmail(w http.ResponseWriter, r *http.Request) {
 	var email struct {
 		Email string `json:"email"`
 	}
@@ -171,6 +178,11 @@ func getPazientByMail(w http.ResponseWriter, r *http.Request) {
 		query.Scan(&paziente.Utente.CodFisc, &paziente.Utente.Nome, &paziente.Utente.Cognome,
 			&paziente.Utente.Email, &paziente.Utente.Citta,
 			&paziente.Utente.Cellulare, &paziente.Utente.Genere, &tempList)
+	}
+
+	if paziente.Utente.CodFisc == "" {
+		http.Error(w, "Paziente non trovato", http.StatusNotFound)
+		return
 	}
 
 	// TODO: testare PatientOf[], perché sicuramente il bastardo lo restituisce come una stringa
@@ -215,6 +227,11 @@ func getPazientByPhoneNumber(w http.ResponseWriter, r *http.Request) {
 			&paziente.Utente.Cellulare, &paziente.Utente.Genere, &tempList)
 	}
 
+	if paziente.Utente.CodFisc == "" {
+		http.Error(w, "Paziente non trovato", http.StatusNotFound)
+		return
+	}
+
 	// TODO: testare PatientOf[], perché sicuramente il bastardo lo restituisce come una stringa
 	// 		te quindi forse conviene creare una variabile stringa temporanea e poi pusharla nell'array
 	paziente.PatientOf = utils.GenerateArray(&tempList)
@@ -228,13 +245,12 @@ func getAllPatients(w http.ResponseWriter, r *http.Request) {
 	allPatients := new([]models.Paziente)
 	db := myDBpckg.ConnectToDB()
 	defer myDBpckg.CloseConnectionToDB(db)
-	query, err := db.Query("SELECT codFisc, nome, cognome, email, citta, cellulare, genere, patientOf FROM utente INNER JOIN paziente USING (codFisc)")
+	query, err := db.Query("SELECT codFisc, nome, cognome, email, citta, cellulare, genere, patientOf FROM utente INNER JOIN paziente USING (codFisc);")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	var i int = 0
 	for query.Next() {
 		paziente := new(models.Paziente)
 		var tempList string
@@ -243,7 +259,15 @@ func getAllPatients(w http.ResponseWriter, r *http.Request) {
 			&paziente.Utente.Cellulare, &paziente.Utente.Genere, &tempList)
 		paziente.PatientOf = utils.GenerateArray(&tempList)
 		*allPatients = append(*allPatients, *paziente)
-		i++
+	}
+
+	primoPaziente := new(models.Paziente)
+	*primoPaziente = (*allPatients)[0]
+
+	if primoPaziente.Utente.CodFisc == "" {
+		http.Error(w, "Nessun paziente trovato", http.StatusNotFound)
+		return
+
 	}
 
 	defer query.Close()
@@ -260,6 +284,26 @@ func getAllPatients(w http.ResponseWriter, r *http.Request) {
 //	- Update Genere:
 
 // Rimuovi Paziente:
+//	- per email
+func deletePatientByEmail(w http.ResponseWriter, r *http.Request) {
+	var email struct {
+		Email string `json:"email"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&email)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	db := myDBpckg.ConnectToDB()
+	defer myDBpckg.CloseConnectionToDB(db)
+	query, err := db.Query("DELETE utente, paziente FROM utente INNER JOIN paziente ON utente.codFisc=paziente.codFisc WHERE " +
+		"utente.email=" + "'" + email.Email + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	defer query.Close()
+}
 
 // ---- CRUD Associazione a Psicologi ----
 
