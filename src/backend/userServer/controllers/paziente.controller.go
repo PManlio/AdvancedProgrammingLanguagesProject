@@ -24,6 +24,8 @@ func PazientHandler(pazientRouter *mux.Router) {
 	pazientRouter.HandleFunc("/getbyemail", getPazientByEmail).Methods("GET")
 	pazientRouter.HandleFunc("/getbyphonenumber", getPazientByPhoneNumber).Methods("GET")
 	pazientRouter.HandleFunc("/getallpatients", getAllPatients).Methods("GET")
+	pazientRouter.HandleFunc("/updatephonenumber", updatePhoneNumber).Methods("PUT")
+	pazientRouter.HandleFunc("/updateemail", updateEmail).Methods("PUT")
 	pazientRouter.HandleFunc("/deletepatientbyemail", deletePatientByEmail).Methods("DELETE")
 }
 
@@ -59,12 +61,12 @@ func CreatePazient(w http.ResponseWriter, r *http.Request) {
 	// CONTROLLO SU TABELLA PER VERIFICARE ESISTENZA
 	var isPresent bool
 
-	errCheck := db.QueryRow("SELECT codFisc FROM utente INNER JOIN paziente ON utente.codFisc = paziente.codFisc " +
-		"WHERE paziente.codFisc = '" + paziente.Utente.CodFisc + "'").Scan(&isPresent)
+	errCheck := db.QueryRow("SELECT utente.codFisc FROM utente INNER JOIN paziente ON utente.codFisc = paziente.codFisc " +
+		"WHERE paziente.codFisc = '" + paziente.Utente.CodFisc + "';").Scan(&isPresent)
 
 	if errCheck != nil && errCheck != sql.ErrNoRows {
 
-		http.Error(w, "row exists already", http.StatusForbidden)
+		http.Error(w, errCheck.Error(), http.StatusForbidden)
 
 	} else if !isPresent {
 
@@ -261,10 +263,8 @@ func getAllPatients(w http.ResponseWriter, r *http.Request) {
 		*allPatients = append(*allPatients, *paziente)
 	}
 
-	primoPaziente := new(models.Paziente)
-	*primoPaziente = (*allPatients)[0]
-
-	if primoPaziente.Utente.CodFisc == "" {
+	// controlla la dimensione dell'array; se è vuoto -> nessun paziente trovato
+	if len(*allPatients) == 0 {
 		http.Error(w, "Nessun paziente trovato", http.StatusNotFound)
 		return
 
@@ -278,10 +278,58 @@ func getAllPatients(w http.ResponseWriter, r *http.Request) {
 
 // Update Paziente
 //	- Update Email:
+func updateEmail(w http.ResponseWriter, r *http.Request) {
+	var updateStruct struct {
+		CodFisc    string `json:"codFisc"`
+		NuovaEmail string `json:"nuovaEmail`
+	}
+	err := json.NewDecoder(r.Body).Decode(&updateStruct)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	db := myDBpckg.ConnectToDB()
+	defer db.Close()
+
+	/**EFFETTUARE UN QUERY CHECK SULL'ESISTENZA DELL'UTENTE VIA CODFISC
+	 * (anche se in realtà non è necessario, dato che l'update viene eseguita sul nulla e non genera errore)
+	 */
+	query, err := db.Query("UPDATE utente SET email=" + "'" + updateStruct.NuovaEmail + "' WHERE " +
+		"codFisc=" + "'" + updateStruct.CodFisc + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	defer query.Close()
+}
 
 //	- Update num Tel:
+func updatePhoneNumber(w http.ResponseWriter, r *http.Request) {
+	var updateStruct struct {
+		CodFisc        string `json:"codFisc"`
+		NuovoCellulare string `json:"nuovoCellulare`
+	}
+	err := json.NewDecoder(r.Body).Decode(&updateStruct)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	db := myDBpckg.ConnectToDB()
+	defer db.Close()
 
-//	- Update Genere:
+	/**EFFETTUARE UN QUERY CHECK SULL'ESISTENZA DELL'UTENTE VIA CODFISC
+	 * (anche se in realtà non è necessario, dato che l'update viene eseguita sul nulla e non genera errore)
+	 */
+	query, err := db.Query("UPDATE utente SET cellulare=" + "'" + updateStruct.NuovoCellulare + "' WHERE " +
+		"codFisc=" + "'" + updateStruct.CodFisc + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	defer query.Close()
+}
+
+//	- Update Genere: -- NEXT USE CASE
 
 // Rimuovi Paziente:
 //	- per email
