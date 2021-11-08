@@ -24,8 +24,8 @@ func PazientHandler(pazientRouter *mux.Router) {
 	pazientRouter.HandleFunc("/getbyemail", getPazientByEmail).Methods("GET")
 	pazientRouter.HandleFunc("/getbyphonenumber", getPazientByPhoneNumber).Methods("GET")
 	pazientRouter.HandleFunc("/getallpatients", getAllPatients).Methods("GET")
-	pazientRouter.HandleFunc("/updatephonenumber", updatePhoneNumber).Methods("PUT")
-	pazientRouter.HandleFunc("/updateemail", updateEmail).Methods("PUT")
+	pazientRouter.HandleFunc("/updatephonenumber", updateParientPhoneNumber).Methods("PUT")
+	pazientRouter.HandleFunc("/updateemail", updateParientEmail).Methods("PUT")
 	pazientRouter.HandleFunc("/deletepatientbyemail", deletePatientByEmail).Methods("DELETE")
 }
 
@@ -278,7 +278,7 @@ func getAllPatients(w http.ResponseWriter, r *http.Request) {
 
 // Update Paziente
 //	- Update Email:
-func updateEmail(w http.ResponseWriter, r *http.Request) {
+func updateParientEmail(w http.ResponseWriter, r *http.Request) {
 	var updateStruct struct {
 		CodFisc    string `json:"codFisc"`
 		NuovaEmail string `json:"nuovaEmail`
@@ -304,7 +304,7 @@ func updateEmail(w http.ResponseWriter, r *http.Request) {
 }
 
 //	- Update num Tel:
-func updatePhoneNumber(w http.ResponseWriter, r *http.Request) {
+func updateParientPhoneNumber(w http.ResponseWriter, r *http.Request) {
 	var updateStruct struct {
 		CodFisc        string `json:"codFisc"`
 		NuovoCellulare string `json:"nuovoCellulare`
