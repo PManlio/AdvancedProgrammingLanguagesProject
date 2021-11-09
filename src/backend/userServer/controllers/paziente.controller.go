@@ -66,7 +66,8 @@ func CreatePazient(w http.ResponseWriter, r *http.Request) {
 
 	if errCheck != nil && errCheck != sql.ErrNoRows {
 
-		http.Error(w, errCheck.Error(), http.StatusForbidden)
+		http.Error(w, "User already exists" /* errCheck.Error() */, http.StatusForbidden)
+		return
 
 	} else if !isPresent {
 

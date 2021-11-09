@@ -26,7 +26,7 @@ func PsicologoHandler(psicologoRouter *mux.Router) {
 	psicologoRouter.HandleFunc("/getallpsicologi", getAllPsicologi).Methods("GET")
 	psicologoRouter.HandleFunc("/updatephonenumber", updatePsicologoPhoneNumber).Methods("PUT")
 	psicologoRouter.HandleFunc("/updateemail", updatePsicologoEmail).Methods("PUT")
-	psicologoRouter.HandleFunc("/deletepsicologobyemail", deletePsicologoByEmail).Methods("PUT")
+	psicologoRouter.HandleFunc("/deletepsicologobyemail", deletePsicologoByEmail).Methods("DELETE")
 }
 
 // al solito, semplice ping per testare routing
@@ -48,8 +48,9 @@ func pong(w http.ResponseWriter, r *http.Request) {
 // Crea Psicologo:
 func CreatePsicologo(w http.ResponseWriter, r *http.Request) {
 
-	var psicologo models.Psicologo
-	err := json.NewDecoder(r.Body).Decode(&psicologo)
+	//var psicologo models.Psicologo
+	psicologo := new(models.Psicologo)
+	err := json.NewDecoder(r.Body).Decode(psicologo)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -70,7 +71,8 @@ func CreatePsicologo(w http.ResponseWriter, r *http.Request) {
 
 	if errCheck != nil && errCheck != sql.ErrNoRows {
 
-		http.Error(w, errCheck.Error(), http.StatusForbidden)
+		http.Error(w, "User already exists" /* errCheck.Error() */, http.StatusForbidden)
+		return
 
 	} else if !isPresent {
 
@@ -85,7 +87,7 @@ func CreatePsicologo(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		insert2, err2 := db.Query("INSERT INTO psicologo(codFisc, Pazienti) VALUES(" + "'" + psicologo.Utente.CodFisc + "'" + ", " +
+		insert2, err2 := db.Query("INSERT INTO psicologo(codFisc, pazienti) VALUES(" + "'" + psicologo.Utente.CodFisc + "'" + ", " +
 			"'" + strings.Join(psicologo.Pazienti, ",") + "');")
 		if err2 != nil {
 			fmt.Println("--------\n\nun errore di query è avvenuto:", err)
