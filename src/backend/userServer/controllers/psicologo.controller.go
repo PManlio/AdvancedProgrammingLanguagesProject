@@ -121,7 +121,7 @@ func getPsicologoByCodFisc(w http.ResponseWriter, r *http.Request) {
 	db := myDBpckg.ConnectToDB()
 	defer myDBpckg.CloseConnectionToDB(db)
 
-	var psicologo models.Psicologo
+	psicologo := new(models.Psicologo)
 
 	query, err := db.Query("SELECT codFisc, nome, cognome, email, citta, cellulare, genere, Pazienti " +
 		"FROM utente INNER JOIN psicologo USING (codFisc) WHERE " +
@@ -168,7 +168,7 @@ func getPsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 	db := myDBpckg.ConnectToDB()
 	defer myDBpckg.CloseConnectionToDB(db)
 
-	var psicologo models.Psicologo
+	psicologo := new(models.Psicologo)
 
 	query, err := db.Query("SELECT codFisc, nome, cognome, email, citta, cellulare, genere, Pazienti " +
 		"FROM utente INNER JOIN psicologo USING (codFisc) WHERE " +
@@ -215,7 +215,7 @@ func getPsicologoByPhoneNumber(w http.ResponseWriter, r *http.Request) {
 	db := myDBpckg.ConnectToDB()
 	defer myDBpckg.CloseConnectionToDB(db)
 
-	var psicologo models.Psicologo
+	psicologo := new(models.Psicologo)
 
 	query, err := db.Query("SELECT codFisc, nome, cognome, email, citta, cellulare, genere, Pazienti " +
 		"FROM utente INNER JOIN psicologo USING (codFisc) WHERE " +
@@ -262,10 +262,6 @@ func getPsicologiByCity(w http.ResponseWriter, r *http.Request) {
 	defer myDBpckg.CloseConnectionToDB(db)
 	listaInfoPsicologi := new([]models.PsicoInfo)
 	infoPsicologo := new(models.PsicoInfo)
-
-	/*listaInfoPsicologi := new([]models.Utente)
-	 *
-	 */
 
 	query, err := db.Query("SELECT nome, cognome, email, citta, cellulare, genere FROM utente INNER JOIN psicologo USING (codFisc) WHERE utente.citta=" +
 		"'" + citta.Citta + "';")

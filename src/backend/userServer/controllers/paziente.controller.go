@@ -117,7 +117,7 @@ func getPazientByCodFisc(w http.ResponseWriter, r *http.Request) {
 	db := myDBpckg.ConnectToDB()
 	defer myDBpckg.CloseConnectionToDB(db)
 
-	var paziente models.Paziente
+	paziente := new(models.Paziente)
 
 	query, err := db.Query("SELECT codFisc, nome, cognome, email, citta, cellulare, genere, patientOf " +
 		"FROM utente INNER JOIN paziente USING (codFisc) WHERE " +
@@ -164,7 +164,7 @@ func getPazientByEmail(w http.ResponseWriter, r *http.Request) {
 	db := myDBpckg.ConnectToDB()
 	defer myDBpckg.CloseConnectionToDB(db)
 
-	var paziente models.Paziente
+	paziente := new(models.Paziente)
 
 	query, err := db.Query("SELECT codFisc, nome, cognome, email, citta, cellulare, genere, patientOf " +
 		"FROM utente INNER JOIN paziente USING (codFisc) WHERE " +
@@ -211,7 +211,7 @@ func getPazientByPhoneNumber(w http.ResponseWriter, r *http.Request) {
 	db := myDBpckg.ConnectToDB()
 	defer myDBpckg.CloseConnectionToDB(db)
 
-	var paziente models.Paziente
+	paziente := new(models.Paziente)
 
 	query, err := db.Query("SELECT codFisc, nome, cognome, email, citta, cellulare, genere, patientOf " +
 		"FROM utente INNER JOIN paziente USING (codFisc) WHERE " +
