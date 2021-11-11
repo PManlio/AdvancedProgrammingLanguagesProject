@@ -247,10 +247,7 @@ func getPsicologoByPhoneNumber(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(psicologo)
 }
 
-type PsicoInfo struct {
-	Nome, Cognome, Email, Citta, Cellulare, Genere string
-}
-
+// prende tutti gli psicologi con una determinata città
 func getPsicologiByCity(w http.ResponseWriter, r *http.Request) {
 	var citta struct {
 		Citta string `json:"citta"`
@@ -263,8 +260,12 @@ func getPsicologiByCity(w http.ResponseWriter, r *http.Request) {
 
 	db := myDBpckg.ConnectToDB()
 	defer myDBpckg.CloseConnectionToDB(db)
-	listaInfoPsicologi := new([]PsicoInfo)
-	infoPsicologo := new(PsicoInfo)
+	listaInfoPsicologi := new([]models.PsicoInfo)
+	infoPsicologo := new(models.PsicoInfo)
+
+	/*listaInfoPsicologi := new([]models.Utente)
+	 *
+	 */
 
 	query, err := db.Query("SELECT nome, cognome, email, citta, cellulare, genere FROM utente INNER JOIN psicologo USING (codFisc) WHERE utente.citta=" +
 		"'" + citta.Citta + "';")
