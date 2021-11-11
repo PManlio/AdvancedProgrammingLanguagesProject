@@ -44,8 +44,8 @@ func ping(w http.ResponseWriter, r *http.Request) {
 // Crea Paziente:
 func CreatePazient(w http.ResponseWriter, r *http.Request) {
 
-	var paziente models.Paziente
-	err := json.NewDecoder(r.Body).Decode(&paziente)
+	paziente := new(models.Paziente)
+	err := json.NewDecoder(r.Body).Decode(paziente)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -125,6 +125,7 @@ func getPazientByCodFisc(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 	}
+	defer query.Close()
 
 	var tempList string
 	// Scan() non può essere eseguita se prima non viene invocata Next()
@@ -144,7 +145,6 @@ func getPazientByCodFisc(w http.ResponseWriter, r *http.Request) {
 	// TODO: testare PatientOf[], perché sicuramente il bastardo lo restituisce come una stringa
 	// 		te quindi forse conviene creare una variabile stringa temporanea e poi pusharla nell'array
 	paziente.PatientOf = utils.GenerateArray(&tempList)
-	defer query.Close()
 
 	json.NewEncoder(w).Encode(paziente)
 }
@@ -220,6 +220,7 @@ func getPazientByPhoneNumber(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
+	defer query.Close()
 
 	var tempList string
 	// Scan() non può essere eseguita se prima non viene invocata Next()
@@ -238,7 +239,6 @@ func getPazientByPhoneNumber(w http.ResponseWriter, r *http.Request) {
 	// TODO: testare PatientOf[], perché sicuramente il bastardo lo restituisce come una stringa
 	// 		te quindi forse conviene creare una variabile stringa temporanea e poi pusharla nell'array
 	paziente.PatientOf = utils.GenerateArray(&tempList)
-	defer query.Close()
 
 	json.NewEncoder(w).Encode(paziente)
 }
@@ -246,16 +246,18 @@ func getPazientByPhoneNumber(w http.ResponseWriter, r *http.Request) {
 // 	- Get All Pazients:
 func getAllPatients(w http.ResponseWriter, r *http.Request) {
 	allPatients := new([]models.Paziente)
+	paziente := new(models.Paziente)
 	db := myDBpckg.ConnectToDB()
 	defer myDBpckg.CloseConnectionToDB(db)
+
 	query, err := db.Query("SELECT codFisc, nome, cognome, email, citta, cellulare, genere, patientOf FROM utente INNER JOIN paziente USING (codFisc);")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
+	defer query.Close()
 
 	for query.Next() {
-		paziente := new(models.Paziente)
 		var tempList string
 		query.Scan(&paziente.Utente.CodFisc, &paziente.Utente.Nome, &paziente.Utente.Cognome,
 			&paziente.Utente.Email, &paziente.Utente.Citta,
@@ -270,8 +272,6 @@ func getAllPatients(w http.ResponseWriter, r *http.Request) {
 		return
 
 	}
-
-	defer query.Close()
 
 	json.NewEncoder(w).Encode(allPatients)
 

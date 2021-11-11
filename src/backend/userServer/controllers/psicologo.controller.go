@@ -24,6 +24,7 @@ func PsicologoHandler(psicologoRouter *mux.Router) {
 	psicologoRouter.HandleFunc("/getbyemail", getPsicologoByEmail).Methods("GET")
 	psicologoRouter.HandleFunc("/getbyphonenumber", getPsicologoByPhoneNumber).Methods("GET")
 	psicologoRouter.HandleFunc("/getallpsicologi", getAllPsicologi).Methods("GET")
+	psicologoRouter.HandleFunc("/getallpsicologibycity", getPsicologiByCity).Methods("GET")
 	psicologoRouter.HandleFunc("/updatephonenumber", updatePsicologoPhoneNumber).Methods("PUT")
 	psicologoRouter.HandleFunc("/updateemail", updatePsicologoEmail).Methods("PUT")
 	psicologoRouter.HandleFunc("/deletepsicologobyemail", deletePsicologoByEmail).Methods("DELETE")
@@ -48,9 +49,9 @@ func pong(w http.ResponseWriter, r *http.Request) {
 // Crea Psicologo:
 func CreatePsicologo(w http.ResponseWriter, r *http.Request) {
 
-	//var psicologo models.Psicologo
+	// var psicologo models.Psicologo
 	psicologo := new(models.Psicologo)
-	err := json.NewDecoder(r.Body).Decode(psicologo)
+	err := json.NewDecoder(r.Body).Decode(&psicologo)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -62,10 +63,12 @@ func CreatePsicologo(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println(psicologo)
 
 	db := myDBpckg.ConnectToDB()
+	defer myDBpckg.CloseConnectionToDB(db)
 
 	// CONTROLLO SU TABELLA PER VERIFICARE ESISTENZA
 	var isPresent bool
 
+	// forse questo err check andrebbe fatto solo con codFisc su UTENTE, non suna innerJoin
 	errCheck := db.QueryRow("SELECT utente.codFisc FROM utente INNER JOIN psicologo ON utente.codFisc = psicologo.codFisc " +
 		"WHERE psicologo.codFisc = '" + psicologo.Utente.CodFisc + "';").Scan(&isPresent)
 
@@ -86,6 +89,7 @@ func CreatePsicologo(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		defer insert1.Close()
 
 		insert2, err2 := db.Query("INSERT INTO psicologo(codFisc, pazienti) VALUES(" + "'" + psicologo.Utente.CodFisc + "'" + ", " +
 			"'" + strings.Join(psicologo.Pazienti, ",") + "');")
@@ -94,15 +98,10 @@ func CreatePsicologo(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		defer insert1.Close()
 		defer insert2.Close()
 
 		json.NewEncoder(w).Encode(http.StatusOK)
-
 	}
-
-	defer myDBpckg.CloseConnectionToDB(db)
 }
 
 // Leggi psicologo -
@@ -248,19 +247,64 @@ func getPsicologoByPhoneNumber(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(psicologo)
 }
 
-// 	- Get All Pazients:
-func getAllPsicologi(w http.ResponseWriter, r *http.Request) {
-	allPsicologi := new([]models.Psicologo)
+type PsicoInfo struct {
+	Nome, Cognome, Email, Citta, Cellulare, Genere string
+}
+
+func getPsicologiByCity(w http.ResponseWriter, r *http.Request) {
+	var citta struct {
+		Citta string `json:"citta"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&citta)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	db := myDBpckg.ConnectToDB()
 	defer myDBpckg.CloseConnectionToDB(db)
+	listaInfoPsicologi := new([]PsicoInfo)
+	infoPsicologo := new(PsicoInfo)
+
+	query, err := db.Query("SELECT nome, cognome, email, citta, cellulare, genere FROM utente INNER JOIN psicologo USING (codFisc) WHERE utente.citta=" +
+		"'" + citta.Citta + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer query.Close()
+
+	for query.Next() {
+		query.Scan(&infoPsicologo.Nome, &infoPsicologo.Cognome, &infoPsicologo.Email,
+			&infoPsicologo.Citta, &infoPsicologo.Cellulare, &infoPsicologo.Genere)
+		*listaInfoPsicologi = append(*listaInfoPsicologi, *infoPsicologo)
+	}
+
+	if len(*listaInfoPsicologi) == 0 {
+		http.Error(w, "Nessun psicologo trovato", http.StatusNotFound)
+		return
+	}
+
+	json.NewEncoder(w).Encode(listaInfoPsicologi)
+
+}
+
+// 	- Get All Psicologi:
+func getAllPsicologi(w http.ResponseWriter, r *http.Request) {
+	allPsicologi := new([]models.Psicologo)
+	psicologo := new(models.Psicologo)
+	db := myDBpckg.ConnectToDB()
+	defer myDBpckg.CloseConnectionToDB(db)
+
 	query, err := db.Query("SELECT codFisc, nome, cognome, email, citta, cellulare, genere, Pazienti FROM utente INNER JOIN psicologo USING (codFisc);")
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
+	defer query.Close()
 
 	for query.Next() {
-		psicologo := new(models.Psicologo)
 		var tempList string
 		query.Scan(&psicologo.Utente.CodFisc, &psicologo.Utente.Nome, &psicologo.Utente.Cognome,
 			&psicologo.Utente.Email, &psicologo.Utente.Citta,
@@ -273,10 +317,7 @@ func getAllPsicologi(w http.ResponseWriter, r *http.Request) {
 	if len(*allPsicologi) == 0 {
 		http.Error(w, "Nessun psicologo trovato", http.StatusNotFound)
 		return
-
 	}
-
-	defer query.Close()
 
 	json.NewEncoder(w).Encode(allPsicologi)
 
