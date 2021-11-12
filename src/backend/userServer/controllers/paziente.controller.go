@@ -396,8 +396,30 @@ func addPsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 		"codFisc=" + "'" + addInfo.CodFisc + "';")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
+		return
 	}
 	defer queryUpdatePaziente.Close()
+
+	// parte per aggiungere l'utente alla lista dei pazienti dello psicologo
+	var listaPazienti string
+	var codFiscPsicologo string
+
+	queryGetPsicologoByEmail, err := db.Query("SELECT codFisc, pazienti FROM utente INNER JOIN psicologo USING (codFisc) WHERE utente.email='" + addInfo.Email + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	queryGetPsicologoByEmail.Scan(&codFiscPsicologo, &listaPazienti)
+	defer queryGetPsicologoByEmail.Close()
+
+	listaPazienti = listaPazienti + "," + addInfo.CodFisc
+
+	queryUpdatePsicologo, err := db.Query("UPDATE psicologo SET pazienti='" + listaPazienti + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	defer queryUpdatePsicologo.Close()
 }
 
 // rimuovi Psicologo
