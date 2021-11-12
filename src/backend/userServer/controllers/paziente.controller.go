@@ -27,6 +27,9 @@ func PazientHandler(pazientRouter *mux.Router) {
 	pazientRouter.HandleFunc("/updatephonenumber", updateParientPhoneNumber).Methods("PUT")
 	pazientRouter.HandleFunc("/updateemail", updateParientEmail).Methods("PUT")
 	pazientRouter.HandleFunc("/deletepatientbyemail", deletePatientByEmail).Methods("DELETE")
+
+	// gestione psicologo:
+	pazientRouter.HandleFunc("/addpsicologbyemail", addPsicologoByEmail).Methods("PUT")
 }
 
 // simple Ping
@@ -274,7 +277,6 @@ func getAllPatients(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(allPatients)
-
 }
 
 // Update Paziente
@@ -357,9 +359,45 @@ func deletePatientByEmail(w http.ResponseWriter, r *http.Request) {
 // ---- CRUD Associazione a Psicologi ----
 
 // aggiungi Psicologo
+//	- By Email
+func addPsicologoByEmail(w http.ResponseWriter, r *http.Request) {
+	var addInfo struct {
+		CodFisc string `json:"codFisc"` // codice fiscale del paziente
+		Email   string `json:"email`    // email dello psicologo
+	}
+	err := json.NewDecoder(r.Body).Decode(&addInfo)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-// leggi Psicologo -
-//	- Get Psicologo By CodFisc
-//	- Get All Psicologysts
+	db := myDBpckg.ConnectToDB()
+	defer myDBpckg.CloseConnectionToDB(db)
+
+	// var elencoEmailPsicologi []string -> noi la otteniamo dalla query come stringa
+	var elencoEmailPsicologiStringa string
+	queryListaPsicologi, err := db.Query("SELECT patientOf FROM paziente WHERE codFisc='" + addInfo.CodFisc + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	for queryListaPsicologi.Next() {
+		queryListaPsicologi.Scan(&elencoEmailPsicologiStringa)
+		// quando ne si fa una GET, la stringa "patientOf" viene parsata come array grazie alla funzione che ho scritto in utils/arrayGen.go
+	}
+
+	// eseguire controllo su stringa (da trasformare quindi in array) per vedere se l'email è già presente?
+
+	elencoEmailPsicologiStringa = elencoEmailPsicologiStringa + "," + addInfo.Email
+	defer queryListaPsicologi.Close()
+
+	// query per aggiornare il paziente
+	queryUpdatePaziente, err := db.Query("UPDATE paziente SET patientOf=" + "'" + elencoEmailPsicologiStringa /* strings.Join(elencoEmailPsicologi, ",") */ + "' WHERE " +
+		"codFisc=" + "'" + addInfo.CodFisc + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+	}
+	defer queryUpdatePaziente.Close()
+}
 
 // rimuovi Psicologo

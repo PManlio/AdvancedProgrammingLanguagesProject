@@ -283,7 +283,6 @@ func getPsicologiByCity(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(listaInfoPsicologi)
-
 }
 
 // 	- Get All Psicologi:
