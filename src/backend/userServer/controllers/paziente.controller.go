@@ -30,6 +30,7 @@ func PazientHandler(pazientRouter *mux.Router) {
 
 	// gestione psicologo:
 	pazientRouter.HandleFunc("/addpsicologbyemail", addPsicologoByEmail).Methods("PUT")
+	pazientRouter.HandleFunc("/removepsicologobyemail", removePsicologoByEmail).Methods("PUT")
 }
 
 // simple Ping
@@ -360,6 +361,22 @@ func deletePatientByEmail(w http.ResponseWriter, r *http.Request) {
 
 // aggiungi Psicologo
 //	- By Email
+
+/* COMMENTO IMPORTANTE:
+In realtà questa funzione "fa due cose", e non solo una come dovrebbe.
+Nello specifico, esegue sia l'update della lista del paziente (che indica di quanti psicologi è paziente)
+sia l'update della lista dei pazienti dello psicologo che è stato aggiunto nella lista del paziente:
+
+paziente (esegue addPsicologo per PsicologoY) -----> pazienteX.patientOf[..., "psicologoY"]
+psicologoY -----> psicologoY.pazienti[..., "pazienteX"]
+
+Il motivo consiste nella semplicità di realizzazione: per eseguire entrambe le funzionalità
+occorrerebbe creare un sistema di notifiche, ad esempio utilizzando un pattern Observer/Observable,
+in cui lo psicologo viene notificato della richiesta di aggiunta di un paziente alla propria lista,
+e solo nel caso in cui lo psicologo accetti si eseguano le operazioni sopraelencate.
+
+Il discorso è analogo per la deletePsicologoByEmail (funzione successiva)
+*/
 func addPsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 	var addInfo struct {
 		CodFisc string `json:"codFisc"` // codice fiscale del paziente
@@ -383,12 +400,14 @@ func addPsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 	}
 	for queryListaPsicologi.Next() {
 		queryListaPsicologi.Scan(&elencoEmailPsicologiStringa)
-		// quando ne si fa una GET, la stringa "patientOf" viene parsata come array grazie alla funzione che ho scritto in utils/arrayGen.go
+		// quando ne si fa una GET (vedi funzioni soprastanti), la stringa "patientOf" viene parsata come array grazie alla funzione che ho scritto in utils/arrayGen.go
 	}
 
 	// eseguire controllo su stringa (da trasformare quindi in array) per vedere se l'email è già presente:
 	if strings.Contains(elencoEmailPsicologiStringa, addInfo.Email) {
 		http.Error(w, "Psicologo già presente in lista patientOf", http.StatusMethodNotAllowed)
+
+		// !!!!!! se non si chiude la connessione col database in maniera esplicita, le query di update vengono comunque eseguite !!!!!!
 		myDBpckg.CloseConnectionToDB(db)
 		return
 	}
@@ -407,7 +426,7 @@ func addPsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 
 	// parte per aggiungere l'utente alla lista dei pazienti dello psicologo
 	var listaPazienti string
-	var codFiscPsicologo string
+	var codFiscPsicologo string // Lo uso per la update dello psicologo, dopo che ho ottenuto la coppia codFisc + pazienti dalla query successiva
 
 	queryGetPsicologoByEmail, err := db.Query("SELECT codFisc, pazienti FROM utente INNER JOIN psicologo USING (codFisc) WHERE utente.email='" + addInfo.Email + "';")
 	if err != nil {
@@ -429,7 +448,7 @@ func addPsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 
 	listaPazienti = listaPazienti + "," + addInfo.CodFisc
 
-	queryUpdatePsicologo, err := db.Query("UPDATE psicologo SET pazienti='" + listaPazienti + "';")
+	queryUpdatePsicologo, err := db.Query("UPDATE psicologo SET pazienti='" + listaPazienti + "' WHERE psicolog.codFisc='" + codFiscPsicologo + ";")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -438,3 +457,81 @@ func addPsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 }
 
 // rimuovi Psicologo
+func removePsicologoByEmail(w http.ResponseWriter, r *http.Request) {
+	var removeInfo struct {
+		CodFisc string `json:"codFisc"` // codice fiscale del paziente
+		Email   string `json:"email`    // email dello psicologo
+	}
+	err := json.NewDecoder(r.Body).Decode(&removeInfo)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	db := myDBpckg.ConnectToDB()
+	defer myDBpckg.CloseConnectionToDB(db)
+
+	// ottieni la lista patientOf del paziente via codFisc
+	queryGetPatientOf, err := db.Query("SELECT patientOf FROM paziente WHERE codFisc='" + removeInfo.CodFisc + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	defer queryGetPatientOf.Close()
+	var patientOf string
+	for queryGetPatientOf.Next() {
+		queryGetPatientOf.Scan(&patientOf)
+	}
+
+	// controlla se l'email dello psicologo è presente
+	// se lo psicologo non è presente nella lista patientOf, chiudiamo connessione col db e returniamo
+	if !strings.Contains(patientOf, removeInfo.Email) {
+		http.Error(w, "Psicologo non presente in lista", http.StatusNotFound)
+		myDBpckg.CloseConnectionToDB(db)
+		return
+	}
+
+	// altrimenti rimuovi email dello psicologo
+	patientOf = strings.ReplaceAll(patientOf, removeInfo.Email, "")
+
+	// UPDATE
+	queryUpdatePatientOf, err := db.Query("UPDATE patientOf SET patientOf='" + patientOf + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer queryUpdatePatientOf.Close()
+
+	// ottieni la lista pazienti dello psicologo (SELECT via email)
+	var listaPazienti string
+	var codFiscPsicologo string
+
+	queryGetPsicologoByEmail, err := db.Query("SELECT codFisc, pazienti FROM utente INNER JOIN psicologo USING (codFisc) WHERE utente.email='" + removeInfo.Email + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	defer queryGetPsicologoByEmail.Close()
+
+	for queryGetPsicologoByEmail.Next() {
+		queryGetPsicologoByEmail.Scan(&codFiscPsicologo, &listaPazienti)
+	}
+
+	// controlla se il codice fiscale del paziente è presente nella lista
+	if !strings.Contains(listaPazienti, removeInfo.CodFisc) {
+		http.Error(w, "Paziente non presente in lista pazienti", http.StatusNotFound)
+		myDBpckg.CloseConnectionToDB(db)
+		return
+	}
+
+	// rimuovi il codice fiscale del paziente
+	listaPazienti = strings.ReplaceAll(listaPazienti, removeInfo.CodFisc, "")
+
+	// UPDATE
+	queryUpdatePsicologo, err := db.Query("UPDATE psicologo SET pazienti='" + listaPazienti + "' WHERE psicolog.codFisc='" + codFiscPsicologo + ";")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	defer queryUpdatePsicologo.Close()
+}
