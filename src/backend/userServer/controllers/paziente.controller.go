@@ -386,7 +386,12 @@ func addPsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 		// quando ne si fa una GET, la stringa "patientOf" viene parsata come array grazie alla funzione che ho scritto in utils/arrayGen.go
 	}
 
-	// eseguire controllo su stringa (da trasformare quindi in array) per vedere se l'email è già presente?
+	// eseguire controllo su stringa (da trasformare quindi in array) per vedere se l'email è già presente:
+	if strings.Contains(elencoEmailPsicologiStringa, addInfo.Email) {
+		http.Error(w, "Psicologo già presente in lista patientOf", http.StatusMethodNotAllowed)
+		myDBpckg.CloseConnectionToDB(db)
+		return
+	}
 
 	elencoEmailPsicologiStringa = elencoEmailPsicologiStringa + "," + addInfo.Email
 	defer queryListaPsicologi.Close()
@@ -409,8 +414,18 @@ func addPsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
-	queryGetPsicologoByEmail.Scan(&codFiscPsicologo, &listaPazienti)
 	defer queryGetPsicologoByEmail.Close()
+
+	for queryGetPsicologoByEmail.Next() {
+		queryGetPsicologoByEmail.Scan(&codFiscPsicologo, &listaPazienti)
+	}
+
+	// controllo se lo psicologo ha già il codice fiscale del paziente inserito nella propria lista:
+	if strings.Contains(listaPazienti, addInfo.CodFisc) {
+		http.Error(w, "Paziente già presente in lista pazienti", http.StatusMethodNotAllowed)
+		myDBpckg.CloseConnectionToDB(db)
+		return
+	}
 
 	listaPazienti = listaPazienti + "," + addInfo.CodFisc
 
