@@ -396,10 +396,21 @@ func deletePsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 	defer query.Close()
 }
 
-// aggiungi Paziente
+// aggiungi Paziente (ne salvo il codice fiscale)
+func addPazienteByEmail(w http.ResponseWriter, r *http.Request) {
 
-// leggi Paziente -
-//	- Get Paziente By CodFisc
-//	- Get All Patients dello psicologo che ne effettua la richiesta
+}
+
+// --------- GESTIONE LISTA PAZIENTI PSICOLOGO ---------
+
+// get Paziente -
+//	- Get All pazient dello psicologo
+func getAllPazientiPsicologo(w http.ResponseWriter, r *http.Request) {
+
+}
+
+//	- Get Paziente By codFisc
+
+//	- Get Paziente By email
 
 // rimuovi Paziente

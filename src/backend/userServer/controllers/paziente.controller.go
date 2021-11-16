@@ -357,7 +357,7 @@ func deletePatientByEmail(w http.ResponseWriter, r *http.Request) {
 	defer query.Close()
 }
 
-// ---- CRUD Associazione a Psicologi ----
+// ---- Associazione a Psicologi ----
 
 // aggiungi Psicologo
 //	- By Email
@@ -495,7 +495,7 @@ func removePsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 	patientOf = strings.ReplaceAll(patientOf, removeInfo.Email, "")
 
 	// UPDATE
-	queryUpdatePatientOf, err := db.Query("UPDATE patientOf SET patientOf='" + patientOf + "';")
+	queryUpdatePatientOf, err := db.Query("UPDATE paziente SET patientOf='" + patientOf + "';")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -528,7 +528,7 @@ func removePsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 	listaPazienti = strings.ReplaceAll(listaPazienti, removeInfo.CodFisc, "")
 
 	// UPDATE
-	queryUpdatePsicologo, err := db.Query("UPDATE psicologo SET pazienti='" + listaPazienti + "' WHERE psicolog.codFisc='" + codFiscPsicologo + ";")
+	queryUpdatePsicologo, err := db.Query("UPDATE psicologo SET pazienti='" + listaPazienti + "' WHERE codFisc='" + codFiscPsicologo + "';")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
