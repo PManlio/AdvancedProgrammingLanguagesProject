@@ -398,7 +398,90 @@ func deletePsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 
 // aggiungi Paziente (ne salvo il codice fiscale)
 func addPazienteByEmail(w http.ResponseWriter, r *http.Request) {
+	var addInfo struct {
+		Email   string `json:"email"`   // email Paziente
+		CodFisc string `json:"codFisc"` // codice fiscale Psicologo
+	}
+	err := json.NewDecoder(r.Body).Decode(&addInfo)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
+	db := myDBpckg.ConnectToDB()
+	defer myDBpckg.CloseConnectionToDB(db)
+
+	// query per aggiungere il codice fiscale del paziente nell'elenco pazienti dello psicologo
+	queryAddPaziente, err := db.Query("SELECT pazienti FROM psicologo WHERE codf='" + addInfo.CodFisc + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	defer queryAddPaziente.Close()
+
+	var listaPazienti, nuovoPaziente string // nuovoPaziente contiene il codice fiscale del paziente da aggiungere
+	for queryAddPaziente.Next() {
+		queryAddPaziente.Scan(&listaPazienti)
+	}
+
+	// RIVEDI QUESTA QUERY
+	querySelectPaziente, err := db.Query("SELECT paziente.codFisc FROM utente INNER JOIN paziente USING (codFisc) WHERE " +
+		"utente.email='" + addInfo.Email + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	defer querySelectPaziente.Close()
+	for querySelectPaziente.Next() {
+		querySelectPaziente.Scan(&nuovoPaziente)
+	}
+
+	// controllo se il paziente è già presente in elenco
+	if strings.Contains(listaPazienti, nuovoPaziente) {
+		http.Error(w, "paziente già presente in lista pazienti", http.StatusMethodNotAllowed)
+		myDBpckg.CloseConnectionToDB(db)
+		return
+	}
+
+	// UPDATE
+	listaPazienti = listaPazienti + "," + nuovoPaziente
+	queryUpdatePazienti, err := db.Query("UPDATE psicologo SET pazienti='" + listaPazienti + "' WHERE codFisc='" + addInfo.CodFisc + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	defer queryUpdatePazienti.Close()
+
+	// query per aggiornare l'elenco patientOf del paziente aggiunto
+	var listaPatientOf string
+	queryGetPatientOf, err := db.Query("SELECT pazientOf FROM paziente WHERE codFisc='" + nuovoPaziente + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusMethodNotAllowed)
+		return
+	}
+	defer queryGetPatientOf.Close()
+	for queryGetPatientOf.Next() {
+		queryGetPatientOf.Scan(&listaPatientOf)
+	}
+
+	var emailPsicologo string
+	queryGetEmailPsicologo, err := db.Query("SELECT email FROM utente WHERE codFisc='" + addInfo.CodFisc + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusMethodNotAllowed)
+		return
+	}
+	defer queryGetEmailPsicologo.Close()
+	for queryGetEmailPsicologo.Next() {
+		queryGetEmailPsicologo.Scan(&emailPsicologo)
+	}
+
+	listaPatientOf = listaPatientOf + "," + emailPsicologo
+	queryUpdatePaziente, err := db.Query("UPDATE paziente SET patientOf='" + listaPatientOf + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusMethodNotAllowed)
+		return
+	}
+	defer queryUpdatePaziente.Close()
 }
 
 // --------- GESTIONE LISTA PAZIENTI PSICOLOGO ---------
