@@ -543,7 +543,7 @@ func getPazientiPsicologo(w http.ResponseWriter, r *http.Request) {
 
 //	- Get Paziente By codFisc -- tecnicamente già c'è in paziente.controller; la riscrivo?
 func getPazienteByCodFisc(w http.ResponseWriter, r *http.Request) {
-
+	// FIXARE IN paziente controller
 }
 
 // rimuovi Paziente
