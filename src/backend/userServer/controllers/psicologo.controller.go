@@ -28,6 +28,12 @@ func PsicologoHandler(psicologoRouter *mux.Router) {
 	psicologoRouter.HandleFunc("/updatephonenumber", updatePsicologoPhoneNumber).Methods("PUT")
 	psicologoRouter.HandleFunc("/updateemail", updatePsicologoEmail).Methods("PUT")
 	psicologoRouter.HandleFunc("/deletepsicologobyemail", deletePsicologoByEmail).Methods("DELETE")
+
+	// gestione pazienti
+	psicologoRouter.HandleFunc("/addpazientebyemail", addPazienteByEmail).Methods("PUT")
+	psicologoRouter.HandleFunc("/getpazienti", getPazientiPsicologo).Methods("GET")
+	psicologoRouter.HandleFunc("/getpaziente", getPazienteByCodFisc).Methods("GET")
+	psicologoRouter.HandleFunc("/removepaziente", removePazienteByCodFisc).Methods("PUT")
 }
 
 // al solito, semplice ping per testare routing
@@ -424,9 +430,9 @@ func addPazienteByEmail(w http.ResponseWriter, r *http.Request) {
 		queryAddPaziente.Scan(&listaPazienti)
 	}
 
-	// RIVEDI QUESTA QUERY
-	querySelectPaziente, err := db.Query("SELECT paziente.codFisc FROM utente INNER JOIN paziente USING (codFisc) WHERE " +
-		"utente.email='" + addInfo.Email + "';")
+	// prendo il codice fiscale del paziente tramite la sua email
+	querySelectPaziente, err := db.Query("SELECT codFisc FROM utente WHERE " +
+		"email='" + addInfo.Email + "';")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -487,13 +493,123 @@ func addPazienteByEmail(w http.ResponseWriter, r *http.Request) {
 // --------- GESTIONE LISTA PAZIENTI PSICOLOGO ---------
 
 // get Paziente -
-//	- Get All pazient dello psicologo
-func getAllPazientiPsicologo(w http.ResponseWriter, r *http.Request) {
+//	- Get pazienti dello psicologo
+func getPazientiPsicologo(w http.ResponseWriter, r *http.Request) {
+	var psicologo struct {
+		CodFisc string `json:"codFisc"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&psicologo)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	db := myDBpckg.ConnectToDB()
+	defer myDBpckg.CloseConnectionToDB(db)
+
+	queryGetLista, err := db.Query("SELECT pazienti FROM psicologo WHERE codFisc='" + psicologo.CodFisc + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	defer queryGetLista.Close()
+
+	var listaString string
+	for queryGetLista.Next() {
+		queryGetLista.Scan(&listaString)
+	}
+	var listaArray []string = utils.GenerateArray(&listaString)
+
+	pazienti := new([]models.PazienteInfo)
+	paziente := new(models.PazienteInfo)
+
+	for _, p := range listaArray {
+		queryPaziente, err := db.Query("SELECT codFisc, nome, cognome, email, cellulare, genere FROM utente WHERE codFisc='" + p + "';")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		queryPaziente.Close()
+
+		for queryPaziente.Next() {
+			queryPaziente.Scan(&paziente.CodFisc, &paziente.Nome, &paziente.Cognome, &paziente.Email,
+				&paziente.Cellulare, &paziente.Genere)
+		}
+		*pazienti = append(*pazienti, *paziente)
+	}
+
+	json.NewEncoder(w).Encode(pazienti)
+}
+
+//	- Get Paziente By codFisc -- tecnicamente già c'è in paziente.controller; la riscrivo?
+func getPazienteByCodFisc(w http.ResponseWriter, r *http.Request) {
 
 }
 
-//	- Get Paziente By codFisc
-
-//	- Get Paziente By email
-
 // rimuovi Paziente
+func removePazienteByCodFisc(w http.ResponseWriter, r *http.Request) {
+	var info struct {
+		CodFiscPsicologo string `json:"codFiscPsicologo"`
+		CodFiscPaziente  string `json:"codFiscPaziente"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&info)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	db := myDBpckg.ConnectToDB()
+	defer myDBpckg.CloseConnectionToDB(db)
+
+	queryGetPazienti, err := db.Query("SELECT pazienti FROM psicologo WHERE codFisc='" + info.CodFiscPsicologo + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	defer queryGetPazienti.Close()
+
+	var listaPazienti string
+	for queryGetPazienti.Next() {
+		queryGetPazienti.Scan(&listaPazienti)
+	}
+	listaPazienti = strings.ReplaceAll(listaPazienti, info.CodFiscPaziente+",", "")
+
+	queryUpdatePazienti, err := db.Query("UPDATE psicologo SET pazienti='" + listaPazienti + "' WHERE codFisc='" + info.CodFiscPsicologo + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusMethodNotAllowed)
+		return
+	}
+	defer queryUpdatePazienti.Close()
+
+	queryGetEmailPsicologo, err := db.Query("SELECT email FROM utente WHERE codFisc='" + info.CodFiscPsicologo + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	defer queryGetEmailPsicologo.Close()
+
+	var emailPsicologo string
+	for queryGetEmailPsicologo.Next() {
+		queryGetEmailPsicologo.Scan(&emailPsicologo)
+	}
+
+	queryGetPaziente, err := db.Query("SELECT patientOf FROM paziente WHERE codFisc='" + info.CodFiscPaziente + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	defer queryGetPaziente.Close()
+
+	var listaPatientOf string
+	for queryGetPaziente.Next() {
+		queryGetPaziente.Scan(&listaPatientOf)
+	}
+	listaPatientOf = strings.ReplaceAll(listaPatientOf, emailPsicologo+",", "")
+
+	queryUpdatePatientOf, err := db.Query("UPDATE paziente SET patientOf='" + listaPatientOf + "' WHERE codFisc='" + info.CodFiscPaziente + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusMethodNotAllowed)
+		return
+	}
+	defer queryUpdatePatientOf.Close()
+}
