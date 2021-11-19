@@ -5,10 +5,6 @@ type Psicologo struct {
 	Pazienti []string `json:"pazienti"`
 }
 
-type PsicoInfo struct {
-	Nome, Cognome, Email, Citta, Cellulare, Genere string
-}
-
 /* func (p *Psicologo) GetInfoPsicologo() *PsicoInfo {
 	info := new(PsicoInfo)
 	info.Nome = p.Utente.Nome

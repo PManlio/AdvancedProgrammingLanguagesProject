@@ -266,8 +266,8 @@ func getPsicologiByCity(w http.ResponseWriter, r *http.Request) {
 
 	db := myDBpckg.ConnectToDB()
 	defer myDBpckg.CloseConnectionToDB(db)
-	listaInfoPsicologi := new([]models.PsicoInfo)
-	infoPsicologo := new(models.PsicoInfo)
+	listaInfoPsicologi := new([]models.Utente)
+	infoPsicologo := new(models.Utente)
 
 	query, err := db.Query("SELECT nome, cognome, email, citta, cellulare, genere FROM utente INNER JOIN psicologo USING (codFisc) WHERE utente.citta=" +
 		"'" + citta.Citta + "';")
@@ -520,8 +520,8 @@ func getPazientiPsicologo(w http.ResponseWriter, r *http.Request) {
 	}
 	var listaArray []string = utils.GenerateArray(&listaString)
 
-	pazienti := new([]models.PazienteInfo)
-	paziente := new(models.PazienteInfo)
+	pazienti := new([]models.Utente)
+	paziente := new(models.Utente)
 
 	for _, p := range listaArray {
 		queryPaziente, err := db.Query("SELECT codFisc, nome, cognome, email, cellulare, genere FROM utente WHERE codFisc='" + p + "';")
