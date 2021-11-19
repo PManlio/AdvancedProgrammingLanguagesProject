@@ -29,7 +29,7 @@ func PazientHandler(pazientRouter *mux.Router) {
 	pazientRouter.HandleFunc("/deletepatientbyemail", deletePatientByEmail).Methods("DELETE")
 
 	// gestione psicologo:
-	pazientRouter.HandleFunc("/addpsicologbyemail", addPsicologoByEmail).Methods("PUT")
+	pazientRouter.HandleFunc("/addpsicologobyemail", addPsicologoByEmail).Methods("PUT")
 	pazientRouter.HandleFunc("/removepsicologobyemail", removePsicologoByEmail).Methods("PUT")
 }
 
@@ -412,7 +412,7 @@ func addPsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	elencoEmailPsicologiStringa = elencoEmailPsicologiStringa + "," + addInfo.Email
+	elencoEmailPsicologiStringa = addInfo.Email + "," + elencoEmailPsicologiStringa
 	defer queryListaPsicologi.Close()
 
 	// query per aggiornare il paziente
@@ -446,9 +446,9 @@ func addPsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	listaPazienti = listaPazienti + "," + addInfo.CodFisc
+	listaPazienti = addInfo.CodFisc + "," + listaPazienti
 
-	queryUpdatePsicologo, err := db.Query("UPDATE psicologo SET pazienti='" + listaPazienti + "' WHERE psicolog.codFisc='" + codFiscPsicologo + ";")
+	queryUpdatePsicologo, err := db.Query("UPDATE psicologo SET pazienti='" + listaPazienti + "' WHERE psicologo.codFisc='" + codFiscPsicologo + "';")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -492,7 +492,7 @@ func removePsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// altrimenti rimuovi email dello psicologo
-	patientOf = strings.ReplaceAll(patientOf, removeInfo.Email, "")
+	patientOf = strings.ReplaceAll(patientOf, removeInfo.Email+",", "")
 
 	// UPDATE
 	queryUpdatePatientOf, err := db.Query("UPDATE paziente SET patientOf='" + patientOf + "';")
@@ -525,7 +525,7 @@ func removePsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// rimuovi il codice fiscale del paziente
-	listaPazienti = strings.ReplaceAll(listaPazienti, removeInfo.CodFisc, "")
+	listaPazienti = strings.ReplaceAll(listaPazienti, removeInfo.CodFisc+",", "")
 
 	// UPDATE
 	queryUpdatePsicologo, err := db.Query("UPDATE psicologo SET pazienti='" + listaPazienti + "' WHERE codFisc='" + codFiscPsicologo + "';")

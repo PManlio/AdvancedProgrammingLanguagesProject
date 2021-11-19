@@ -481,7 +481,7 @@ func addPazienteByEmail(w http.ResponseWriter, r *http.Request) {
 		queryGetEmailPsicologo.Scan(&emailPsicologo)
 	}
 
-	listaPatientOf = listaPatientOf + "," + emailPsicologo
+	listaPatientOf = emailPsicologo + "," + listaPatientOf
 	queryUpdatePaziente, err := db.Query("UPDATE paziente SET patientOf='" + listaPatientOf + "';")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusMethodNotAllowed)
