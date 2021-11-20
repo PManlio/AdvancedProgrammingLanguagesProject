@@ -32,7 +32,6 @@ func PsicologoHandler(psicologoRouter *mux.Router) {
 	// gestione pazienti
 	psicologoRouter.HandleFunc("/addpazientebyemail", addPazienteByEmail).Methods("PUT")
 	psicologoRouter.HandleFunc("/getpazienti", getPazientiPsicologo).Methods("GET")
-	psicologoRouter.HandleFunc("/getpaziente", getPazienteByCodFisc).Methods("GET")
 	psicologoRouter.HandleFunc("/removepaziente", removePazienteByCodFisc).Methods("PUT")
 }
 
@@ -322,7 +321,6 @@ func getAllPsicologi(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(allPsicologi)
-
 }
 
 // Update psicologo
@@ -418,7 +416,7 @@ func addPazienteByEmail(w http.ResponseWriter, r *http.Request) {
 	defer myDBpckg.CloseConnectionToDB(db)
 
 	// query per aggiungere il codice fiscale del paziente nell'elenco pazienti dello psicologo
-	queryAddPaziente, err := db.Query("SELECT pazienti FROM psicologo WHERE codf='" + addInfo.CodFisc + "';")
+	queryAddPaziente, err := db.Query("SELECT pazienti FROM psicologo WHERE codFisc='" + addInfo.CodFisc + "';")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -450,7 +448,7 @@ func addPazienteByEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// UPDATE
-	listaPazienti = listaPazienti + "," + nuovoPaziente
+	listaPazienti = nuovoPaziente + "," + listaPazienti
 	queryUpdatePazienti, err := db.Query("UPDATE psicologo SET pazienti='" + listaPazienti + "' WHERE codFisc='" + addInfo.CodFisc + "';")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -460,7 +458,7 @@ func addPazienteByEmail(w http.ResponseWriter, r *http.Request) {
 
 	// query per aggiornare l'elenco patientOf del paziente aggiunto
 	var listaPatientOf string
-	queryGetPatientOf, err := db.Query("SELECT pazientOf FROM paziente WHERE codFisc='" + nuovoPaziente + "';")
+	queryGetPatientOf, err := db.Query("SELECT patientOf FROM paziente WHERE codFisc='" + nuovoPaziente + "';")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusMethodNotAllowed)
 		return
@@ -481,7 +479,7 @@ func addPazienteByEmail(w http.ResponseWriter, r *http.Request) {
 		queryGetEmailPsicologo.Scan(&emailPsicologo)
 	}
 
-	listaPatientOf = emailPsicologo + "," + listaPatientOf
+	listaPatientOf = listaPatientOf + "," + emailPsicologo
 	queryUpdatePaziente, err := db.Query("UPDATE paziente SET patientOf='" + listaPatientOf + "';")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusMethodNotAllowed)
@@ -518,7 +516,14 @@ func getPazientiPsicologo(w http.ResponseWriter, r *http.Request) {
 	for queryGetLista.Next() {
 		queryGetLista.Scan(&listaString)
 	}
+
 	var listaArray []string = utils.GenerateArray(&listaString)
+
+	if len(listaArray) == 0 {
+		http.Error(w, "Nessun paziente in lista", http.StatusNotFound)
+		myDBpckg.CloseConnectionToDB(db)
+		return
+	}
 
 	pazienti := new([]models.Utente)
 	paziente := new(models.Utente)
@@ -529,7 +534,7 @@ func getPazientiPsicologo(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		queryPaziente.Close()
+		defer queryPaziente.Close()
 
 		for queryPaziente.Next() {
 			queryPaziente.Scan(&paziente.CodFisc, &paziente.Nome, &paziente.Cognome, &paziente.Email,
@@ -541,10 +546,7 @@ func getPazientiPsicologo(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(pazienti)
 }
 
-//	- Get Paziente By codFisc -- tecnicamente già c'è in paziente.controller; la riscrivo?
-func getPazienteByCodFisc(w http.ResponseWriter, r *http.Request) {
-	// FIXARE IN paziente controller
-}
+//	- Get Paziente By codFisc già c'è in paziente.controller
 
 // rimuovi Paziente
 func removePazienteByCodFisc(w http.ResponseWriter, r *http.Request) {
