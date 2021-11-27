@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"./controllers"
+	"./manager"
 	"./middlewares"
 
 	"github.com/gorilla/mux"
@@ -28,11 +29,15 @@ func handleRequests() {
 
 	requestHandler.Use(middlewares.GlobalHeaders)
 
+	//momentaneo: Login
+	loginSubrouter := requestHandler.PathPrefix("/login").Subrouter()
+
 	pazienteSubrouter := requestHandler.PathPrefix("/paziente").Subrouter()
 	psicologoSubrouter := requestHandler.PathPrefix("/psicologo").Subrouter()
 
 	requestHandler.HandleFunc("/", homeRoot)
 
+	manager.LoginHandler(loginSubrouter)
 	controllers.PazientHandler(pazienteSubrouter)
 	controllers.PsicologoHandler(psicologoSubrouter)
 
