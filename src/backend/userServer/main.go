@@ -28,6 +28,7 @@ func handleRequests() {
 	**/
 
 	requestHandler.Use(middlewares.GlobalHeaders)
+	requestHandler.Use(middlewares.CheckHeader)
 
 	//momentaneo: Login
 	loginSubrouter := requestHandler.PathPrefix("/login").Subrouter()

@@ -48,8 +48,11 @@ func IsJWTTokenValid(tokenFromHeader string) (bool, error) {
 		if _, ok := t.Method.(*jwtLib.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Error during JWT Decode")
 		}
-		return string(getSecret()), nil
+		return getSecret(), nil
 	})
+	if err != nil {
+		return false, err
+	}
 	return token.Valid, err
 }
 
