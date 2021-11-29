@@ -27,6 +27,8 @@ func handleRequests() {
 	 *handler delle sotto-route.
 	**/
 
+	// RIMANE DA AGGIUNGERE IL MIDDLEWARE DELLE CORS POLICIES
+
 	requestHandler.Use(middlewares.GlobalHeaders)
 	requestHandler.Use(middlewares.CheckHeader)
 
