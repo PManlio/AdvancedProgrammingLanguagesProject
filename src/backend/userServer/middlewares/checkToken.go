@@ -13,7 +13,7 @@ func CheckHeader(next http.Handler) http.Handler {
 
 		switch r.URL.Path {
 
-		case "login", "/paziente/create", "psicolgo/create":
+		case "/login", "/paziente/create", "/psicolgo/create":
 			next.ServeHTTP(w, r)
 
 		default:

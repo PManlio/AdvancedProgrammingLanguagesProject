@@ -27,7 +27,8 @@ func handleRequests() {
 	 *handler delle sotto-route.
 	**/
 
-	// RIMANE DA AGGIUNGERE IL MIDDLEWARE DELLE CORS POLICIES
+	// CORS policies:
+	setCorsPolicies := middlewares.SetCORS()
 
 	requestHandler.Use(middlewares.GlobalHeaders)
 	requestHandler.Use(middlewares.CheckHeader)
@@ -46,7 +47,7 @@ func handleRequests() {
 
 	// log.Fatal è l'equivalente di Print(), ma seguita da
 	// una chiamata a os.Exit(1)
-	log.Fatal(http.ListenAndServe(":8085", requestHandler))
+	log.Fatal(http.ListenAndServe(":8085", setCorsPolicies(requestHandler)))
 }
 
 func main() {

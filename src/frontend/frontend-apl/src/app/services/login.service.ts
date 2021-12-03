@@ -6,14 +6,16 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class LoginService {
 
-  private serverUrl = `localhost:8085/login`
+  private serverUrl = `http://localhost:8085/login`
+
   private headers = new HttpHeaders({
+    'Content-Type': 'application/x-www-form-urlencoded',
     'Accept': 'application/json',
   });
 
   constructor(private http: HttpClient) { }
 
-  public authenticate(email, password: string) {
+  public authenticate(email: string, password: string) {
     let basic = btoa(`${email}:${password}`);
     let headers = this.headers.append('Authorization', `Basic ${basic}`);
 

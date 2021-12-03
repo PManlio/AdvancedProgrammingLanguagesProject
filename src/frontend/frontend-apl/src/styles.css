@@ -10,6 +10,7 @@ body {
     color: rgba(240, 240, 240, 0.75);
 }
 
+
 .wave {
     background-image: url("./static/static-bg.svg");
     /* aspect-ratio: 1920/1080; */
