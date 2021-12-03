@@ -17,6 +17,10 @@ func LoginHandler(loginRouter *mux.Router) {
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
+	if r.Header.Get("Authorization") == "" {
+		http.Error(w, "No Basic Authorization", http.StatusUnauthorized)
+		return
+	}
 	reqToken := strings.Split(r.Header.Get("Authorization"), "Basic ")[1]
 	if reqToken == "" {
 		http.Error(w, "no bearer in header", http.StatusBadRequest)
@@ -28,6 +32,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	if (userInfo[0] == "") || (userInfo[1] == "") {
+		http.Error(w, "No Email or Password present", http.StatusUnauthorized)
+		return
+	}
+
 	email := userInfo[0]
 	password := userInfo[1]
 
