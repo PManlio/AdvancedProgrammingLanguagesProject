@@ -8,8 +8,16 @@
         <p>per favore, rivolgiti ad un esperto.</p>
     </div>
 
-    <div style="display: inline-block;">
-        <app-main-login></app-main-login>
+    <div class="myForm">
+        <form #formInputs="ngForm">
+            <input class="myInput" type="text" name="email" placeholder="Email" ngModel>
+            <input class="myInput" type="password" name="password" placeholder="Password" ngModel>
+        </form>
+    </div>
+
+    <div class="buttonsDiv">
+        <app-main-login [formValues]="formInputs"></app-main-login>
+        <div class="buttonDivider">oppure</div>
         <app-main-register></app-main-register>
     </div>
 </div>

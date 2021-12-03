@@ -1,0 +1,36 @@
+.myForm {
+    width: 40%;
+    margin: auto;
+}
+.myInput {
+    width: 100%;
+    height: auto;
+    font-size: 3vh;
+    height: 5vh;
+    color: rgba(240, 240, 240, 0.75);
+    background-color: transparent;
+    border: 0.15vh solid rgba(240, 240, 240, 0.75);
+    border-radius: 20vh;
+    margin-bottom: 5vh;
+}
+ 
+
+input[type="text"], input[type="password"] {
+    max-width: 97%;
+    padding-left: 3%;
+}
+
+
+.buttonsDiv {
+    width: 40%;
+    margin: auto;
+    display: inline-flexbox;
+}
+.buttonDivider {
+    width: 20%;
+    height: auto;
+    display: inline-block;
+    text-align: center;
+    align-items: center;
+    font-size: 2.5vh;
+}
