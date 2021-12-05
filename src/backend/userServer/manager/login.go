@@ -47,7 +47,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	queryFindUser, err := db.Query("SELECT codFisc FROM utente WHERE email='" + email + "' AND password='" + hashpassword + "';")
 	if err != nil {
-		http.Error(w, "utente non trovato", http.StatusNotFound)
+		http.Error(w, "utente non trovato", http.StatusUnauthorized)
+		return
+	}
+
+	if !queryFindUser.Next() {
+		http.Error(w, "utente non trovato", http.StatusUnauthorized)
 		return
 	}
 

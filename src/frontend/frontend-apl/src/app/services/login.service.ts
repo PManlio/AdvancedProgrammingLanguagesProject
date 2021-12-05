@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { JwtService } from './jwt.service';
+import { JwtInterface } from '../interfaces/jwtInterface';
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +15,21 @@ export class LoginService {
     'Accept': 'application/json',
   });
 
-  constructor(private http: HttpClient) { }
+  private jwtInterface: JwtInterface;
+
+  constructor(private http: HttpClient, private jwt: JwtService) { }
 
   public authenticate(email: string, password: string) {
     let basic = btoa(`${email}:${password}`);
     let headers = this.headers.append('Authorization', `Basic ${basic}`);
 
-    return this.http.post(`${this.serverUrl}`, null, { headers }).toPromise().then(v => console.log(v));
+    return this.http.post(`${this.serverUrl}`, null, { headers })
+      .toPromise()
+      .then(tkn => {
+        this.jwtInterface = JSON.parse(JSON.stringify(tkn));
+        this.jwt.storeJWT(this.jwtInterface.token);
+        window.location.reload();
+      })
+      .catch(err => console.error(err));
   }
 }

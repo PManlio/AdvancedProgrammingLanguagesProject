@@ -1,1 +1,10 @@
-<app-main-div></app-main-div>
+<ng-container *ngIf="isPresentJwt; then logged else notLogged"></ng-container>
+
+<ng-template #notLogged>
+    <app-main-div></app-main-div>
+</ng-template>
+
+<ng-template #logged>
+    <div><h1 style="text-align: center;">Il jwt è presente.</h1></div>
+    <div><app-logoutbtn></app-logoutbtn></div>
+</ng-template>
