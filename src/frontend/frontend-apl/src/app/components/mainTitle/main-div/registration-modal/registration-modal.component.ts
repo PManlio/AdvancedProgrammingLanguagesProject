@@ -1,7 +1,8 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Output, ViewChild, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Paziente } from 'src/app/interfaces/paziente';
 import { RegisterService } from 'src/app/services/register.service';
+// import { EventEmitter } from 'events';
 
 @Component({
   selector: 'app-registration-modal',
@@ -10,16 +11,18 @@ import { RegisterService } from 'src/app/services/register.service';
 })
 export class RegistrationModalComponent implements OnInit {
 
-  // @ViewChild('registrationModal') thisModal: any;
+  @ViewChild('registrationModal') thisModal: any;
 
   @Input() public isSeen: boolean;
+  @Output() resetEmitter: EventEmitter<any> = new EventEmitter();
 
   private paziente: Paziente;
 
   constructor(private register: RegisterService) { }
 
-  public chiudiForm(event) {
+  public chiudiForm() {
     this.isSeen = false;
+    this.resetEmitter.emit(this.isSeen)
   }
 
   ngOnInit(): void {
