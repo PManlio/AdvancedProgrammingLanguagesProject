@@ -8,6 +8,7 @@ import { MainDivComponent } from './components/mainTitle/main-div/main-div.compo
 import { MainLoginComponent } from './components/mainTitle/main-div/main-login/main-login.component';
 import { MainRegisterComponent } from './components/mainTitle/main-div/main-register/main-register.component';
 import { LogoutbtnComponent } from './components/logoutbtn/logoutbtn.component';
+import { RegistrationModalComponent } from './components/mainTitle/main-div/registration-modal/registration-modal.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { LogoutbtnComponent } from './components/logoutbtn/logoutbtn.component';
     MainDivComponent,
     MainLoginComponent,
     MainRegisterComponent,
-    LogoutbtnComponent
+    LogoutbtnComponent,
+    RegistrationModalComponent
   ],
   imports: [
     BrowserModule,

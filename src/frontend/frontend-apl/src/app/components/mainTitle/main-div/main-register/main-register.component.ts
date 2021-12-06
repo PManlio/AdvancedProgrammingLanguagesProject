@@ -9,7 +9,15 @@ export class MainRegisterComponent implements OnInit {
 
   constructor() { }
 
+  public isSeen: boolean = false;
+
   ngOnInit(): void {
+    this.isSeen = false;
+  }
+
+  public showRegistrationModal() {
+    this.isSeen = this.isSeen ? false : true;
+    console.log("faccio qualcosa");
   }
 
 }
