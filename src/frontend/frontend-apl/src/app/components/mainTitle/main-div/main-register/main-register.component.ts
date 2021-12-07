@@ -16,8 +16,8 @@ export class MainRegisterComponent implements OnInit {
   }
 
   public showRegistrationModal() {
-    this.isSeen = this.isSeen ? false : true;
-    console.log("faccio qualcosa");
+    this.isSeen = true;
+    // console.log("faccio qualcosa");
   }
 
 }

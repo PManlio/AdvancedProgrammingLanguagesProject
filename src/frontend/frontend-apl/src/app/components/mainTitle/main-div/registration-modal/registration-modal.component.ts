@@ -1,8 +1,7 @@
 import { Component, Input, OnInit, Output, ViewChild, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Paziente } from 'src/app/interfaces/paziente';
+import { RegistrationInterface } from 'src/app/interfaces/registration-interface';
 import { RegisterService } from 'src/app/services/register.service';
-// import { EventEmitter } from 'events';
 
 @Component({
   selector: 'app-registration-modal',
@@ -12,11 +11,12 @@ import { RegisterService } from 'src/app/services/register.service';
 export class RegistrationModalComponent implements OnInit {
 
   @ViewChild('registrationModal') thisModal: any;
+  private repeatPassword: string;
 
   @Input() public isSeen: boolean;
   @Output() resetEmitter: EventEmitter<any> = new EventEmitter();
 
-  private paziente: Paziente;
+  private registrationInterface: RegistrationInterface;
 
   constructor(private register: RegisterService) { }
 
@@ -29,10 +29,16 @@ export class RegistrationModalComponent implements OnInit {
     this.isSeen = false;
   }
 
-  public registerSubmit(registerForm: NgForm) {
-    if (registerForm.value.password != registerForm.value.repeatPassword) {
+  public registerSubmit(registerForm: NgForm, confirmPassword: any) {
+
+    this.repeatPassword = confirmPassword.value;
+    this.registrationInterface = JSON.parse(JSON.stringify(registerForm.value));
+
+    if (this.registrationInterface.password != this.repeatPassword) {
       window.alert("password ripetuta male, riprova");
       return
     }
+
+    // proseguire con il registration
   }
 }
