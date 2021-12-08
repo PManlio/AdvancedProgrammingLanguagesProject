@@ -53,7 +53,7 @@ input {
     margin-bottom: 1.5vh;
 }
 
-input[type="text"], input[type="password"] {
+input[type="text"], input[type="password"], input[type="email"] {
     max-width: 91%;
     padding-left: 3%;
 }

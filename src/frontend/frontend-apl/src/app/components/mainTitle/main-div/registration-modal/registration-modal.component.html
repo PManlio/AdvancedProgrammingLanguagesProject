@@ -1,16 +1,16 @@
 <div id="registrationModal" class="registrationModal" *ngIf="isSeen">
     <button id="closeButton" (click)="chiudiForm()"></button>
     <form #registerForm="ngForm" id="rform" (ngSubmit)="registerSubmit(registerForm, confirmPassword)">
+        <input type="text" placeholder="Codice Fiscale" name="codFisc" autocomplete="off" ngModel #codFisc="ngModel">
         <input type="text" placeholder="Nome" name="nome" autocomplete="off" ngModel #nome="ngModel">
         <input type="text" placeholder="Cognome" name="cognome" autocomplete="off" ngModel #cognome="ngModel">
-        <input type="text" placeholder="Email" name="email" autocomplete="off" ngModel #email="ngModel">
+        <input type="email" placeholder="Email" name="email" autocomplete="off" ngModel #email="ngModel">
         <input type="password" placeholder="Password" name="password" autocomplete="off" ngModel #password="ngModel">
 
         <input type="password" placeholder="Ripeti Password" name="ripetiPassword" #confirmPassword autocomplete="off">
 
-        <input type="text" placeholder="Codice Fiscale" name="codFisc" autocomplete="off" ngModel codFisc="ngModel">
-        <input type="text" placeholder="Cellulare" name="cellulare" autocomplete="off" ngModel cellulare="ngModel">
         <input type="text" placeholder="Città" name="citta" autocomplete="off" ngModel citta="ngModel">
+        <input type="text" placeholder="Cellulare" name="cellulare" autocomplete="off" ngModel cellulare="ngModel">
         <input type="text" placeholder="Genere" name="genere" autocomplete="off" ngModel genere="ngModel">
 
         <button class="button registerSubmit" type="submit">Registrati</button>

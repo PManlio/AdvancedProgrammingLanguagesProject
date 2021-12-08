@@ -63,6 +63,14 @@ func CreatePsicologo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	decryptCodFisc, _ := utils.DecryptBasic(psicologo.Utente.CodFisc)
+	decryptEmail, _ := utils.DecryptBasic(psicologo.Utente.Email)
+	decryptPassword, _ := utils.DecryptBasic(psicologo.Utente.Password)
+
+	psicologo.Utente.CodFisc = decryptCodFisc[0]
+	psicologo.Utente.Email = decryptEmail[0]
+	psicologo.Utente.Password = decryptPassword[0]
+
 	// fmt.Println(psicologo)
 	psicologo.Utente.Password = utils.Encrypt(psicologo.Utente.Password)
 	// fmt.Println(psicologo)

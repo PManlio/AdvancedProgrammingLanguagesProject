@@ -40,5 +40,6 @@ export class RegistrationModalComponent implements OnInit {
     }
 
     // proseguire con il registration
+    this.register.register(this.registrationInterface);
   }
 }

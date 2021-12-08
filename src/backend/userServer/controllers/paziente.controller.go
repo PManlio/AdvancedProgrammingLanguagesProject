@@ -56,6 +56,14 @@ func CreatePazient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	decryptCodFisc, _ := utils.DecryptBasic(paziente.Utente.CodFisc)
+	decryptEmail, _ := utils.DecryptBasic(paziente.Utente.Email)
+	decryptPassword, _ := utils.DecryptBasic(paziente.Utente.Password)
+
+	paziente.Utente.CodFisc = decryptCodFisc[0]
+	paziente.Utente.Email = decryptEmail[0]
+	paziente.Utente.Password = decryptPassword[0]
+
 	// fmt.Println(paziente)
 	paziente.Utente.Password = utils.Encrypt(paziente.Utente.Password)
 	// fmt.Println(paziente)
