@@ -1,5 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { myEnv } from 'src/environments/myEnv';
 import { RegistrationInterface } from '../interfaces/registration-interface';
 
 @Injectable({
@@ -7,12 +8,10 @@ import { RegistrationInterface } from '../interfaces/registration-interface';
 })
 export class RegisterService {
 
-  private url: string = "http://localhost:8085/paziente/create"
+  private url: string = `${myEnv.userServerUrl}/paziente/create`
 
-  private headers = new HttpHeaders({
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Accept': 'application/json',
-  });
+  private headers = new HttpHeaders(myEnv.headers);
+  
   constructor(private http: HttpClient) { }
 
   public register(body: RegistrationInterface) {

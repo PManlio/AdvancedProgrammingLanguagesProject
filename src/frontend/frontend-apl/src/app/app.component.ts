@@ -18,8 +18,8 @@ export class AppComponent implements OnInit {
     this.jwt.watchJWT().subscribe(
       (isStored : boolean) => {
         this.isPresentJwt = isStored;
-      }
-    )
+      })
+    this.jwt.isJWTvalid();
   }
 
 }

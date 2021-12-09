@@ -2,6 +2,7 @@ package manager
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -45,22 +46,27 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	var hashpassword string = utils.Encrypt(password)
 
-	queryFindUser, err := db.Query("SELECT codFisc FROM utente WHERE email='" + email + "' AND password='" + hashpassword + "';")
+	queryFindUser, err := db.Query("SELECT codFisc FROM utente WHERE email='" + string(email) + "' AND password='" + hashpassword + "';")
 	if err != nil {
-		http.Error(w, "utente non trovato", http.StatusUnauthorized)
-		return
-	}
-
-	if !queryFindUser.Next() {
 		http.Error(w, "utente non trovato", http.StatusUnauthorized)
 		return
 	}
 
 	// per ora lo tengo come struct
 	utente := new(utils.Jwt)
+
 	for queryFindUser.Next() {
 		queryFindUser.Scan(&utente.CodFisc)
 		utente.Date = time.Now()
+	}
+
+	fmt.Printf("Query: %v", queryFindUser)
+
+	defer queryFindUser.Close()
+
+	if utente.CodFisc == "" {
+		http.Error(w, "utente non trovato", http.StatusUnauthorized)
+		return
 	}
 
 	token, err := utente.GenerateToken()

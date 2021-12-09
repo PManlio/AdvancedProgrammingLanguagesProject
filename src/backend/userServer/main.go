@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,7 +13,7 @@ import (
 )
 
 func homeRoot(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode("Main Endpoint root /")
+	// json.NewEncoder(w).Encode("Main Endpoint root /")
 }
 
 func handleRequests() {

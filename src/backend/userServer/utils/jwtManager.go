@@ -31,7 +31,7 @@ func (jwt *Jwt) GenerateToken() (string, error) {
 
 	claims["authorized"] = true
 	claims["user"] = jwt.CodFisc
-	claims["exp"] = jwt.Date.Add(time.Minute * 600000).Unix() // 10k ore: circa 416 giorni
+	claims["ExpiresAt"] = jwt.Date.Add(time.Hour * 60000) /*.Unix()*/ // 10k ore: circa 416 giorni
 
 	tokenString, err := token.SignedString(getSecret())
 	if err != nil {
@@ -43,17 +43,18 @@ func (jwt *Jwt) GenerateToken() (string, error) {
 	return tokenString, nil
 }
 
-func IsJWTTokenValid(tokenFromHeader string) (bool, error) {
-	token, err := jwtLib.Parse(tokenFromHeader, func(t *jwtLib.Token) (interface{}, error) {
+func IsJWTTokenValid(tokenFromHeader string) (bool, interface{}, error) {
+	token, err := jwtLib.ParseWithClaims(tokenFromHeader, jwtLib.MapClaims{}, func(t *jwtLib.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwtLib.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Error during JWT Decode")
 		}
 		return getSecret(), nil
 	})
+	fmt.Println(token)
 	if err != nil {
-		return false, err
+		return false, " ", err
 	}
-	return token.Valid, err
+	return token.Valid, token.Claims.(jwtLib.MapClaims)["user"], err
 }
 
 func DecryptBasic(b string) ([]string, error) {
