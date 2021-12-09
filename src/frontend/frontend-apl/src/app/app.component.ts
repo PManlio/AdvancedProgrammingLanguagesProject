@@ -16,10 +16,14 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     // console.log(localStorage.getItem('token'))
     this.jwt.watchJWT().subscribe(
-      (isStored : boolean) => {
+      (isStored: boolean) => {
         this.isPresentJwt = isStored;
-      })
-    this.jwt.isJWTvalid();
+      }
+    );
+
+    if (this.isPresentJwt) {
+      this.jwt.isJWTvalid();
+    }
   }
 
 }

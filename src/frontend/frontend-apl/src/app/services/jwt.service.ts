@@ -34,11 +34,6 @@ export class JwtService {
 
   private envHeaders = new HttpHeaders(myEnv.headers)
 
-  private extractData(res: any) {
-    let body = res;
-    console.log(body);
-    return body;
-  }
   public isJWTvalid() {
     let headersWithToken = this.envHeaders.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
     return this.http.get(myEnv.userServerUrl, { headers: headersWithToken })
