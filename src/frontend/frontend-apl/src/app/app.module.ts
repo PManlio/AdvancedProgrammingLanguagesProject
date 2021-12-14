@@ -9,6 +9,8 @@ import { MainLoginComponent } from './components/mainTitle/main-div/main-login/m
 import { MainRegisterComponent } from './components/mainTitle/main-div/main-register/main-register.component';
 import { LogoutbtnComponent } from './components/logoutbtn/logoutbtn.component';
 import { RegistrationModalComponent } from './components/mainTitle/main-div/registration-modal/registration-modal.component';
+import { LoggedInPazienteComponent } from './components/logged-in-paziente/logged-in-paziente.component';
+import { PsicologoCardComponent } from './components/logged-in-paziente/psicologo-card/psicologo-card.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +19,9 @@ import { RegistrationModalComponent } from './components/mainTitle/main-div/regi
     MainLoginComponent,
     MainRegisterComponent,
     LogoutbtnComponent,
-    RegistrationModalComponent
+    RegistrationModalComponent,
+    LoggedInPazienteComponent,
+    PsicologoCardComponent
   ],
   imports: [
     BrowserModule,

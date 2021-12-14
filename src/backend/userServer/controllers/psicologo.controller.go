@@ -21,7 +21,7 @@ func PsicologoHandler(psicologoRouter *mux.Router) {
 	// CRUD Psicologo
 	psicologoRouter.HandleFunc("/create", CreatePsicologo).Methods("POST")
 	psicologoRouter.HandleFunc("/getbycodfisc", getPsicologoByCodFisc).Methods("GET")
-	psicologoRouter.HandleFunc("/getbyemail", getPsicologoByEmail).Methods("GET")
+	psicologoRouter.HandleFunc("/getbyemail", getPsicologoByEmail).Methods("POST")
 	psicologoRouter.HandleFunc("/getbyphonenumber", getPsicologoByPhoneNumber).Methods("GET")
 	psicologoRouter.HandleFunc("/getallpsicologi", getAllPsicologi).Methods("GET")
 	psicologoRouter.HandleFunc("/getallpsicologibycity", getPsicologiByCity).Methods("GET")

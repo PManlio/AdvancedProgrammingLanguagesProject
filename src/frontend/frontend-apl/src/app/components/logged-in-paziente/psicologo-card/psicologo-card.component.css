@@ -1,0 +1,39 @@
+.infoContainer {
+    width: 70%;
+    margin-top: 10vh;
+    margin: auto;
+}
+.disclaimer {
+    width: 70%;
+    margin: auto;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+}
+.disclaimer>h1{
+    font-size: 5vh;
+}
+
+.cardsContainer {
+    width: 100%;
+    margin: auto;
+    display: inline-block;
+}
+
+.card {
+    font-size: 3vh;
+    font-weight: bold;
+    width: 33vh;
+    border: 1px solid;
+    border-color: #FCF7F8;
+    border-radius: 1.5vh;
+}
+
+p, h3 {
+    margin-left: 5%;
+    margin-top: 5%;
+}
+hr {
+    width: 90%;
+    border-left: 5%;
+    border-right: 5%;
+}

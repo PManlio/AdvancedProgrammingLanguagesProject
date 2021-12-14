@@ -14,6 +14,10 @@ import (
 
 func homeRoot(w http.ResponseWriter, r *http.Request) {
 	// json.NewEncoder(w).Encode("Main Endpoint root /")
+	/* 	chiamata di caricamento pagina una volta che si è eseguito il login
+	di fatto è una route per permettere al middleware di inviare informazioni
+	utili al client
+	*/
 }
 
 func handleRequests() {

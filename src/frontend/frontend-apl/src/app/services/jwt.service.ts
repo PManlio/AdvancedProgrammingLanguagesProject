@@ -18,6 +18,13 @@ export class JwtService {
 
   public removeJWT(): void {
     localStorage.removeItem('token');
+
+    // successivamente bisogna rimuovere anche le altre informazioni ottenute al login
+    localStorage.removeItem('codFisc');
+    localStorage.removeItem('nome');
+    localStorage.removeItem('cognome');
+    localStorage.removeItem('email');
+    
     window.location.reload()
   }
 
@@ -38,7 +45,14 @@ export class JwtService {
     let headersWithToken = this.envHeaders.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
     return this.http.get(myEnv.userServerUrl, { headers: headersWithToken })
       .toPromise()
-      .then(response => console.log(response))
+      .then(response => this.saveInformation(response))
       .catch(err => console.log(err));
+  }
+
+  private saveInformation(obj: any) {
+    localStorage.setItem("codFisc", obj.CodFisc)
+    localStorage.setItem("nome", obj.Nome)
+    localStorage.setItem("cognome", obj.Cognome)
+    localStorage.setItem("email", obj.Email)
   }
 }

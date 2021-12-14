@@ -50,7 +50,9 @@ func IsJWTTokenValid(tokenFromHeader string) (bool, interface{}, error) {
 		}
 		return getSecret(), nil
 	})
-	fmt.Println(token)
+	// per debug, decommenta la linea di codice sottostante
+	// fmt.Println(token)
+
 	if err != nil {
 		return false, " ", err
 	}

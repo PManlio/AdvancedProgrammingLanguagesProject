@@ -35,8 +35,6 @@ func checkRequest(w http.ResponseWriter, r *http.Request) (bool, string, error) 
 		return isValid, codFisc, err
 	}
 
-	//str := "[CHECKTOKEN]: " + fmt.Sprintf("%v", codFisc)
-	//fmt.Println(str)
 	return isValid, codFisc, err
 }
 
@@ -69,7 +67,7 @@ func CheckHeader(next http.Handler) http.Handler {
 				return
 			}
 			utente, _ := getUserInfo(codFisc)
-			fmt.Println(utente)
+			// fmt.Println(utente)
 
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(utente)
@@ -80,27 +78,34 @@ func CheckHeader(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 
 		default:
-
-			token := strings.Split(r.Header.Get("Authorization"), "Bearer ")[1]
-			if token == "" {
-				http.Error(w, "Missing Token", http.StatusForbidden)
+			isValid, _, err := checkRequest(w, r)
+			if !isValid || err != nil {
+				errStr := fmt.Sprintf("Error token is: %v \n %v", isValid, err.Error())
+				http.Error(w, errStr, http.StatusForbidden)
 				return
 			}
+			/*
+				token := strings.Split(r.Header.Get("Authorization"), "Bearer ")[1]
+				if token == "" {
+					http.Error(w, "Missing Token", http.StatusForbidden)
+					return
+				}
 
-			isValid, codFisc, err := utils.IsJWTTokenValid(token)
-			if err != nil {
-				fmt.Println("[CHECKTOKEN, err]:", token, err)
-				http.Error(w, "Invalid Token", http.StatusForbidden)
-				return
-			}
+				isValid, codFisc, err := utils.IsJWTTokenValid(token)
+				if err != nil {
+					fmt.Println("[CHECKTOKEN, err]:", token, err)
+					http.Error(w, "Invalid Token", http.StatusForbidden)
+					return
+				}
 
-			if !isValid {
-				w.Header().Set("Content-Type", "application/json")
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			}
+				if !isValid {
+					w.Header().Set("Content-Type", "application/json")
+					http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				}
 
-			str := "[CHECKTOKEN]: " + fmt.Sprintf("%v", codFisc)
-			fmt.Println(str)
+				str := "[CHECKTOKEN]: " + fmt.Sprintf("%v", codFisc)
+				fmt.Println(str)
+			*/
 
 			next.ServeHTTP(w, r)
 		}
