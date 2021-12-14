@@ -1,15 +1,20 @@
 <div class="disclaimer">
-    <h1>Questi sono gli psicologi più vicini a te:</h1>
+    <h1>Questi sono gli psicologi che ti stanno seguendo:</h1>
 </div>
 <div class="infoContainer">
-    
     <div class="cardsContainer" *ngFor="let number of [1,2,3]">
-        <div class="card">
-            <h3>Nome Cognome</h3>
-            <hr>
-            <p>Email: asd@ajdjwad.t</p>
-            <p>Cellulare: 12317417</p>
-            <p></p>
+        <div class="divider">
+            <div class="card">
+                <h3>Nome Cognome</h3>
+                <hr>
+                <p>Email: asd@ajdjwad.t</p>
+                <p>Cellulare: 12317417</p>
+                <p></p>
+            </div>
+            <div class="icons">
+                <button id="diario">Scrivi diario</button>
+                <button id="rimuovi">Rimuovi psicologo</button>
+            </div>
         </div>
     </div>
 </div>

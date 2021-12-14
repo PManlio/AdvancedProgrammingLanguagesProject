@@ -3,35 +3,70 @@
     margin-top: 10vh;
     margin: auto;
 }
+
 .disclaimer {
     width: 70%;
     margin: auto;
-    margin-top: 2vh;
-    margin-bottom: 2vh;
+    margin-top: 4vh;
+    margin-bottom: 6vh;
 }
-.disclaimer>h1{
+
+.disclaimer>h1 {
     font-size: 5vh;
 }
 
 .cardsContainer {
     width: 100%;
-    margin: auto;
-    display: inline-block;
+    display: inline-flex;
+    background-color: rgba(0, 0, 0, 0.2);
 }
-
-.card {
-    font-size: 3vh;
-    font-weight: bold;
-    width: 33vh;
-    border: 1px solid;
+.divider {
+    display: inline-flex;
+    width: 100%;
+    margin-bottom: 4vh;
+    border-top: 1px solid;
     border-color: #FCF7F8;
-    border-radius: 1.5vh;
+}
+.card {
+    font-size: 4vh;
+    font-weight: bold;
+    width: 70%;
 }
 
+.icons {
+    display: table;
+    width: 30%;
+    text-align: center;
+    justify-content: center;
+}
+
+button {
+    background-color: transparent;
+    border: 1px solid;
+    border-radius: 1.5vh;
+    margin: 15% 15% 15% 0;
+    width: 100%;
+    padding: 5%;
+    display: table-cell;
+    font-size: 3vh;
+    color: #FCF7F8;
+}
+button {
+    max-width: 85%;
+}
+#diario {
+    border-color: #197278;;
+    color: #197278;;
+}
+#rimuovi {
+    border-color: #FF0054;
+    color: #FF0054;
+}
 p, h3 {
     margin-left: 5%;
     margin-top: 5%;
 }
+
 hr {
     width: 90%;
     border-left: 5%;
