@@ -1,0 +1,38 @@
+.cercaPsicologoContainer {
+    width: 50%;
+    margin: auto;
+}
+
+form.searchbar input[type=text] {
+    padding: 10px;
+    font-size: 17px;
+    border: 1px solid grey;
+    float: left;
+    width: 80%;
+    background: #f1f1f1;
+}
+
+/* Style the submit button */
+form.searchbar button {
+    float: left;
+    width: 20%;
+    padding: 10px;
+    background: #2196F3;
+    color: white;
+    font-size: 17px;
+    border: 1px solid grey;
+    border-left: none;
+    /* Prevent double borders */
+    cursor: pointer;
+}
+
+form.searchbar button:hover {
+    background: #0b7dda;
+}
+
+/* Clear floats */
+form.searchbar::after {
+    content: "";
+    clear: both;
+    display: table;
+}

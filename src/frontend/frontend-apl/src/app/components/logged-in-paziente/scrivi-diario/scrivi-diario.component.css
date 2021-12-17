@@ -1,0 +1,47 @@
+.diarioContainer, .infoPsicologo {
+    width: 50%;
+    margin: auto;
+}
+
+.infoPsicologo {
+    margin-top: 3vh;
+    margin-bottom: 3vh;
+    text-align: center;
+    font-size: 3vh;
+    font-weight: bold;
+}
+
+textarea {
+    width: 100%;
+    height: 30vh;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: #FCF7F8;
+    font-size: 2vh;
+}
+
+.buttonsContainer {
+    width: 100%;
+    margin-top: 3vh;
+    margin-bottom: 3vh;
+    display: flex;
+}
+button {
+    background-color: transparent;
+    border: 1px solid;
+    border-radius: 1.5vh;
+    width: 40%;
+    display: inline-block;
+    font-size: 3vh;
+    color: #FCF7F8;
+}
+.buttonDivider {
+    width: 20%;
+}
+.submitText {
+    color: #197278;
+    border-color: #197278;
+}
+.back {
+    color: #FF0054;
+    border-color: #FF0054;
+}

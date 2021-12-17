@@ -1,18 +1,18 @@
 .infoContainer {
-    width: 70%;
+    width: 50%;
     margin-top: 10vh;
     margin: auto;
 }
 
 .disclaimer {
-    width: 70%;
+    width: 50%;
     margin: auto;
     margin-top: 4vh;
     margin-bottom: 6vh;
 }
 
 .disclaimer>h1 {
-    font-size: 5vh;
+    font-size: 4vh;
 }
 
 .cardsContainer {

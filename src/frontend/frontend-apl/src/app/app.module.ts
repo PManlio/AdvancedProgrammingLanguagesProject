@@ -11,6 +11,10 @@ import { LogoutbtnComponent } from './components/logoutbtn/logoutbtn.component';
 import { RegistrationModalComponent } from './components/mainTitle/main-div/registration-modal/registration-modal.component';
 import { LoggedInPazienteComponent } from './components/logged-in-paziente/logged-in-paziente.component';
 import { PsicologoCardComponent } from './components/logged-in-paziente/psicologo-card/psicologo-card.component';
+import { AppRoutingModule } from './modules/app-routing/app-routing.module';
+import { ScriviDiarioComponent } from './components/logged-in-paziente/scrivi-diario/scrivi-diario.component';
+import { CercapsicologoComponent } from './components/logged-in-paziente/cercapsicologo/cercapsicologo.component';
+import { HomeComponent } from './components/logged-in-paziente/home/home.component';
 
 @NgModule({
   declarations: [
@@ -21,12 +25,16 @@ import { PsicologoCardComponent } from './components/logged-in-paziente/psicolog
     LogoutbtnComponent,
     RegistrationModalComponent,
     LoggedInPazienteComponent,
-    PsicologoCardComponent
+    PsicologoCardComponent,
+    ScriviDiarioComponent,
+    CercapsicologoComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]
