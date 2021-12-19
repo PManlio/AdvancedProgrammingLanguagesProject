@@ -1,0 +1,42 @@
+.psicologoContainer {
+    width: 100%;
+    margin: auto;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3vh;
+}
+
+.table {
+    display: flex;
+}
+
+.column1, .column2 {
+    margin: auto;
+}
+
+.column1 {
+    width: 50%;
+}
+
+.psicologoInfo {
+    margin-left: 3vh;
+    margin-bottom: 3vh;
+}
+
+.column2 {
+    width: 50%;
+}
+
+.buttonContainer {
+    width: 60%;
+    margin: auto
+}
+
+button {
+    font-size: 3vh;
+    color: rgba(255, 255, 255, 0.9);
+    width: 100%;
+
+    background-color: #197278;
+    border: 0.15vh solid #197278;
+    border-radius: 1vh;
+}

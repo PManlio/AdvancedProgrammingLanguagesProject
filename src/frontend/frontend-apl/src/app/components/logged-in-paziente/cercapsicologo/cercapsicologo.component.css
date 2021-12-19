@@ -1,26 +1,39 @@
 .cercaPsicologoContainer {
     width: 50%;
     margin: auto;
+    margin-top: 3vh;
 }
 
+.searchbarContainer {
+    display: inline;
+}
+
+.listContainer {
+    margin-top: 3vh;
+    font-size: 3vh;
+}
+
+
 form.searchbar input[type=text] {
-    padding: 10px;
-    font-size: 17px;
-    border: 1px solid grey;
+    width: 79.7%;
+    padding: 1%;
+    font-size: 3vh;
+    border: 0.15vh solid grey;
+    border-radius: 2vh 0 0 2vh;
     float: left;
-    width: 80%;
-    background: #f1f1f1;
+    background: transparent;/* #f1f1f1; */
 }
 
 /* Style the submit button */
 form.searchbar button {
     float: left;
-    width: 20%;
-    padding: 10px;
+    width: 18%;
+    padding: 1%;
     background: #2196F3;
     color: white;
-    font-size: 17px;
-    border: 1px solid grey;
+    font-size: 3vh;
+    border: 0.15vh solid grey;
+    border-radius: 0 2vh 2vh 0;
     border-left: none;
     /* Prevent double borders */
     cursor: pointer;

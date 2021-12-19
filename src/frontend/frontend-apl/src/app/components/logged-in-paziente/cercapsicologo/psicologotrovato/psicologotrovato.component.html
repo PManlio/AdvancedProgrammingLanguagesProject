@@ -1,0 +1,19 @@
+<div *ngIf="psicologo" class="psicologoContainer">
+    <div class="table">
+        <div class="column1">
+            <div class="psicologoInfo">
+                <h2>{{ psicologo.nome }} {{ psicologo.cognome }}</h2>
+                {{ psicologo.email }} <br>
+                {{ psicologo.cellulare }} <br>
+                {{ psicologo.citta }} <br>
+            </div>
+        </div>
+        <div class="column2">
+            <div class="buttonContainer">
+                <!--aggiungere ngIf per vedere se il paziente che ha cercato questo psicologo è già nella lista dei pazienti dello psicologo
+                    e in caso affermativo, sostituire questo bottone con un altro bottone "rimuovi psicologo" -->
+                <button>Aggiungi Psicologo</button>
+            </div>
+        </div>
+    </div>
+</div>

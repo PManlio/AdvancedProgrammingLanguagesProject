@@ -15,6 +15,7 @@ import { AppRoutingModule } from './modules/app-routing/app-routing.module';
 import { ScriviDiarioComponent } from './components/logged-in-paziente/scrivi-diario/scrivi-diario.component';
 import { CercapsicologoComponent } from './components/logged-in-paziente/cercapsicologo/cercapsicologo.component';
 import { HomeComponent } from './components/logged-in-paziente/home/home.component';
+import { PsicologotrovatoComponent } from './components/logged-in-paziente/cercapsicologo/psicologotrovato/psicologotrovato.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { HomeComponent } from './components/logged-in-paziente/home/home.compone
     PsicologoCardComponent,
     ScriviDiarioComponent,
     CercapsicologoComponent,
-    HomeComponent
+    HomeComponent,
+    PsicologotrovatoComponent
   ],
   imports: [
     BrowserModule,
