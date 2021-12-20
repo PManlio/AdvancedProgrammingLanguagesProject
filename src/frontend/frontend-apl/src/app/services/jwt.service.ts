@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { myEnv } from 'src/environments/myEnv';
+import { UserInfoService } from './user-info.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ export class JwtService {
 
   private isJWTstored = new Subject<boolean>();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private userInfo: UserInfoService) { }
 
   public storeJWT(jwt: string): void {
     localStorage.setItem('token', jwt);
@@ -50,9 +51,14 @@ export class JwtService {
   }
 
   private saveInformation(obj: any) {
-    localStorage.setItem("codFisc", obj.CodFisc)
+    this.userInfo.localCodFisc = obj.CodFisc;
+    this.userInfo.localNome = obj.Nome;
+    this.userInfo.localCognome = obj.Cognome;
+    this.userInfo.localEmail = obj.Email;
+
+    /* localStorage.setItem("codFisc", obj.CodFisc)
     localStorage.setItem("nome", obj.Nome)
     localStorage.setItem("cognome", obj.Cognome)
-    localStorage.setItem("email", obj.Email)
+    localStorage.setItem("email", obj.Email) */
   }
 }

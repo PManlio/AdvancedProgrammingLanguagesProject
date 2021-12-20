@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PazienteServiceService } from 'src/app/services/paziente-service.service';
+import { UserInfoService } from 'src/app/services/user-info.service';
 
 @Component({
   selector: 'app-logged-in-paziente',
@@ -8,14 +9,15 @@ import { PazienteServiceService } from 'src/app/services/paziente-service.servic
 })
 export class LoggedInPazienteComponent implements OnInit {
 
-  constructor(private pazienteService: PazienteServiceService) { }
+  public nome: string;
+  
+  constructor(private pazienteService: PazienteServiceService, private userInfo: UserInfoService) {
+    this.userInfo.nome.subscribe(() => this.nome = this.userInfo.localNome)
+  }
 
-  public nome: string = localStorage.getItem("nome")
-
-  ngOnInit(): void {
+  ngOnInit(): void {  
     this.pazienteService.findPsicologoByEmail("psico@logo.t");
     this.pazienteService.getAllPsicologi()
     // domanda: posso avere la benedizione di cambiare le chiamate nel server in POST?
   }
-
 }

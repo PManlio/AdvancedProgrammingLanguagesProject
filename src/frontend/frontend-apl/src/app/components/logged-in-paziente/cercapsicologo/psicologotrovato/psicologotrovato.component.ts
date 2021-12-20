@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Psicologo } from 'src/app/interfaces/psicologo';
+import { PazienteServiceService } from 'src/app/services/paziente-service.service';
+import { UserInfoService } from 'src/app/services/user-info.service';
 
 @Component({
   selector: 'app-psicologotrovato',
@@ -8,17 +10,22 @@ import { Psicologo } from 'src/app/interfaces/psicologo';
 })
 export class PsicologotrovatoComponent implements OnInit {
 
-  public psicologo: Psicologo = {
-    nome: "giulio",
-    cognome: "macchevino",
-    email: "giulio.m@asd.t",
-    cellulare: "123455",
-    citta: "ct"
-  };
+  @Input() public psicologo: Psicologo;
+  @Input() public isPresent: boolean = false;
+  private codFisc: string;
 
-  constructor() { }
+  constructor(private pazienteService: PazienteServiceService, private userInfo: UserInfoService) { 
+    this.userInfo.codFisc.subscribe(() => { this.codFisc = this.userInfo.localCodFisc; })
+  }
 
-  ngOnInit(): void {
+  ngOnInit(): void { }
+
+  public addPsicologo() {
+    this.pazienteService.addPsicologoByEmail(this.psicologo.utente.Email, this.codFisc)
+  }
+
+  public removePsicologo() {
+    this.pazienteService.removePsicologoByEmail(this.psicologo.utente.Email, this.codFisc)
   }
 
 }

@@ -2,14 +2,14 @@
     <div class="table">
         <div class="column1">
             <div class="psicologoInfo">
-                <h2>{{ psicologo.nome }} {{ psicologo.cognome }}</h2>
-                {{ psicologo.email }} <br>
-                {{ psicologo.cellulare }} <br>
-                {{ psicologo.citta }} <br>
+                <h2>{{ psicologo.utente.Nome }} {{ psicologo.utente.Cognome }}</h2>
+                {{ psicologo.utente.Email }} <br>
+                {{ psicologo.utente.Cellulare }} <br>
+                {{ psicologo.utente.Citta }} <br>
             </div>
         </div>
         <div class="column2">
-            <div class="buttonContainer">
+            <div class="buttonContainer" *ngIf="isPresent then rimuovi else aggiungi;">
                 <!--aggiungere ngIf per vedere se il paziente che ha cercato questo psicologo è già nella lista dei pazienti dello psicologo
                     e in caso affermativo, sostituire questo bottone con un altro bottone "rimuovi psicologo" -->
                 <button>Aggiungi Psicologo</button>
@@ -17,3 +17,11 @@
         </div>
     </div>
 </div>
+
+<ng-template #aggiungi>
+    <button (click)="addPsicologo()" routerLink="/">Aggiungi Psicologo</button>
+</ng-template>
+
+<ng-template #rimuovi>
+    <button id="remove" (click)="removePsicologo()" routerLink="/cercapsicologo">Rimuovi Psicologo</button>
+</ng-template>

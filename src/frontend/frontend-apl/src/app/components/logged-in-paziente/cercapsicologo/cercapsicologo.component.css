@@ -13,14 +13,14 @@
     font-size: 3vh;
 }
 
-
 form.searchbar input[type=text] {
-    width: 79.7%;
+    width: 79.5%;
     padding: 1%;
     font-size: 3vh;
     border: 0.15vh solid grey;
     border-radius: 2vh 0 0 2vh;
     float: left;
+    color: white;
     background: transparent;/* #f1f1f1; */
 }
 

@@ -2,11 +2,19 @@
 <div class="cercaPsicologoContainer">
     <div class="searchbarContainer">
         <form action="" class="searchbar">
-            <input type="text" name="email" placeholder="cerca uno psicologo inserendo l'email..." id="">
-            <button type="submit" style="background-color: #197278; border: 0.15vh solid #197278;"><i class="fa fa-search"></i></button>
+            <input #email type="text" name="email" placeholder="cerca uno psicologo inserendo l'email..." autocomplete="off">
+            <button type="submit" style="background-color: #197278; border: 0.15vh solid #197278;" (click)="getPsicologoByEmail(email.value)"><i class="fa fa-search"></i></button>
         </form>
     </div>
     <div class="listContainer">
-        <app-psicologotrovato></app-psicologotrovato>
+        <div *ngIf="isFound then PsicologoTrovato else PsicologoNonTrovato;"></div>
+        <!-- <app-psicologotrovato></app-psicologotrovato> -->
     </div>
 </div>
+
+<ng-template #PsicologoTrovato>
+    <app-psicologotrovato [psicologo]=psicologo [isPresent]=isPresent></app-psicologotrovato>
+</ng-template>
+
+<ng-template #PsicologoNonTrovato>
+</ng-template>
