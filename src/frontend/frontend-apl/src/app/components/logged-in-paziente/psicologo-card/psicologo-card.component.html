@@ -1,20 +1,41 @@
 <div class="disclaimer">
-    <h1>Questi sono gli psicologi che ti stanno seguendo:</h1>
+    <h1>Quelli a seguire sono gli psicologi che hai aggiunto</h1>
 </div>
-<div class="infoContainer">
-    <div class="cardsContainer" *ngFor="let number of [1,2,3]">
-        <div class="divider">
-            <div class="card">
-                <h3>Nome Cognome</h3>
-                <hr>
-                <p>Email: asd@ajdjwad.t</p>
-                <p>Cellulare: 12317417</p>
-                <p></p>
-            </div>
-            <div class="icons">
-                <button id="diario" [routerLink]="['/scrividiario', {emailPsicologo: number}]">Scrivi diario</button>
-                <button id="rimuovi">Rimuovi psicologo</button>
+<div *ngIf="isPsicologiFull then isFull else isEmpty"></div>
+
+<ng-template #isFull>
+    <div class="infoContainer">
+        <div class="cardsContainer" *ngFor="let psicologo of psicologi">
+            <div class="divider">
+                <div class="card">
+                    <h3>{{ psicologo.utente.Nome }} {{ psicologo.utente.Cognome }}</h3>
+                    <hr>
+                    <p>{{ psicologo.utente.Email }}</p>
+                    <p>{{ psicologo.utente.Cellulare }}</p>
+                    <p></p>
+                </div>
+                <div class="icons">
+                    <button id="diario" [routerLink]="['/scrividiario', { emailPsicologo: psicologo.utente.Email }]">Scrivi
+                        diario</button>
+                    <button id="rimuovi" (click)="rimuoviPsicologo(psicologo.utente.Email)">Rimuovi psicologo</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</ng-template>
+
+<ng-template #isEmpty>
+    <div class="infoContainer">
+        <div class="cardsContainer">
+            <div class="divider">
+                <div class="card">
+                    <p>Sembra non ci sia alcuno psicologo che ti segua...</p>
+                </div>
+                <div class="icons">
+                    <button style="margin: auto; margin-top: 2vh;" routerLink="/cercapsicologo">Prova a cercarne
+                        uno!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

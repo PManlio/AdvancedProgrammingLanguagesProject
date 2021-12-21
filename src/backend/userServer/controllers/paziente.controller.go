@@ -29,6 +29,7 @@ func PazientHandler(pazientRouter *mux.Router) {
 	pazientRouter.HandleFunc("/deletepatientbyemail", deletePatientByEmail).Methods("DELETE")
 
 	// gestione psicologo:
+	pazientRouter.HandleFunc("/getallpsicologiofpatient", getAllPsicologiOfPatient).Methods("POST")
 	pazientRouter.HandleFunc("/addpsicologobyemail", addPsicologoByEmail).Methods("PUT")
 	pazientRouter.HandleFunc("/removepsicologobyemail", removePsicologoByEmail).Methods("PUT")
 }
@@ -462,6 +463,61 @@ func addPsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer queryUpdatePsicologo.Close()
+}
+
+func getAllPsicologiOfPatient(w http.ResponseWriter, r *http.Request) {
+	var patientInfo struct {
+		CodFisc string `json:"codFisc"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&patientInfo)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	db := myDBpckg.ConnectToDB()
+	defer myDBpckg.CloseConnectionToDB(db)
+
+	queryGetPatientOf, err := db.Query("SELECT patientOf FROM paziente WHERE codFisc='" + patientInfo.CodFisc + "';")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	defer queryGetPatientOf.Close()
+
+	var patientOfString string
+	for queryGetPatientOf.Next() {
+		queryGetPatientOf.Scan(&patientOfString)
+	}
+	var patientOfList []string = utils.GenerateArray(&patientOfString)
+
+	psicologi := new([]models.Psicologo)
+
+	for _, psicologoEmail := range patientOfList {
+
+		var psicologo models.Psicologo
+
+		getPsicologo, err := db.Query("SELECT codFisc, nome, cognome, email, citta, cellulare, genere " +
+			"FROM utente INNER JOIN psicologo USING (codFisc) WHERE " +
+			"email = " + "'" + psicologoEmail + "' LIMIT 1;")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		}
+
+		for getPsicologo.Next() {
+			getPsicologo.Scan(&psicologo.Utente.CodFisc, &psicologo.Utente.Nome, &psicologo.Utente.Cognome,
+				&psicologo.Utente.Email, &psicologo.Utente.Citta,
+				&psicologo.Utente.Cellulare, &psicologo.Utente.Genere)
+
+			*psicologi = append(*psicologi, psicologo)
+		}
+
+		getPsicologo.Close()
+
+	}
+
+	json.NewEncoder(w).Encode(*psicologi)
+
 }
 
 // rimuovi Psicologo

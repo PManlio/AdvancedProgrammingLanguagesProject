@@ -28,6 +28,6 @@ export class LoginService {
         this.jwt.storeJWT(this.jwtInterface.token);
         window.location.reload();
       })
-      .catch(err => console.error(err));
+      .catch(err => alert(JSON.stringify(err)));
   }
 }

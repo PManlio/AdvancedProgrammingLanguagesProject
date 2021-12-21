@@ -22,7 +22,10 @@ export class PazienteServiceService {
   public findPsicologoByEmail(mail: string) {
     return this.http.post<Psicologo>(`${this.url}/psicologo/getbyemail`, {"email":mail},{headers: this.headersWithToken});//.toPromise()/*.then(v => console.log(v))*/.catch(err => console.log(err));
   }
-  // aggiunge psicologo via nome
+
+  public getAllPsicologiOfPatient(codFisc: string) {
+    return this.http.post<Psicologo[]>(`${this.url}/paziente/getallpsicologiofpatient`, {"codFisc":codFisc}, { headers: this.headersWithToken })
+  }
 
   // aggiunge psicologo via email
   public addPsicologoByEmail(psicologoMail: string, pazienteCodFisc: string) {

@@ -12,12 +12,8 @@ export class LoggedInPazienteComponent implements OnInit {
   public nome: string;
   
   constructor(private pazienteService: PazienteServiceService, private userInfo: UserInfoService) {
-    this.userInfo.nome.subscribe(() => this.nome = this.userInfo.localNome)
+    this.userInfo.nome.subscribe(nome => this.nome = nome)
   }
 
-  ngOnInit(): void {  
-    this.pazienteService.findPsicologoByEmail("psico@logo.t");
-    this.pazienteService.getAllPsicologi()
-    // domanda: posso avere la benedizione di cambiare le chiamate nel server in POST?
-  }
+  ngOnInit(): void { }
 }

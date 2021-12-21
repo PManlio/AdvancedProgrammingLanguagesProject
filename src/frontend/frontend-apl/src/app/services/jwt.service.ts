@@ -44,10 +44,10 @@ export class JwtService {
 
   public isJWTvalid() {
     let headersWithToken = this.envHeaders.append('Authorization', `Bearer ${localStorage.getItem('token')}`);
-    return this.http.get(myEnv.userServerUrl, { headers: headersWithToken })
-      .toPromise()
-      .then(response => this.saveInformation(response))
-      .catch(err => console.log(err));
+    return this.http.get(myEnv.userServerUrl, { headers: headersWithToken }).subscribe(res => { this.saveInformation(res) })
+      // .toPromise()
+      // .then(response => this.saveInformation(response))
+      // .catch(err => console.log(err));
   }
 
   private saveInformation(obj: any) {

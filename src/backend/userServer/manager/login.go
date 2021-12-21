@@ -2,7 +2,6 @@ package manager
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -60,7 +59,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		utente.Date = time.Now()
 	}
 
-	fmt.Printf("Query: %v", queryFindUser)
+	// fmt.Printf("Query: %v", queryFindUser)
 
 	defer queryFindUser.Close()
 

@@ -2,10 +2,10 @@
     Stai scrivendo a {{ emailPsicologo }}
 </div>
 <div class="diarioContainer">
-    <textarea></textarea>
+    <textarea #text></textarea>
     <br>
     <div class="buttonsContainer">
-        <button class="submitText">Invia Testo</button>
+        <button class="submitText" (click)="sendText(text.value)" routerLink="/">Invia Testo</button>
         <div class="buttonDivider"></div>
         <button class="back" routerLink="/">Torna indietro</button>
     </div>

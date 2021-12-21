@@ -15,7 +15,7 @@ export class PsicologotrovatoComponent implements OnInit {
   private codFisc: string;
 
   constructor(private pazienteService: PazienteServiceService, private userInfo: UserInfoService) { 
-    this.userInfo.codFisc.subscribe(() => { this.codFisc = this.userInfo.localCodFisc; })
+    this.userInfo.codFisc.subscribe(codFisc => { this.codFisc = codFisc; })
   }
 
   ngOnInit(): void { }

@@ -15,7 +15,7 @@ export class UserInfoService {
     return localStorage.getItem("codFisc");
   }
   set localCodFisc(newCodFisc) {
-    this.nome.next(newCodFisc)
+    this.codFisc.next(newCodFisc)
     localStorage.setItem("codFisc", newCodFisc);
   }
 
@@ -31,7 +31,7 @@ export class UserInfoService {
     return localStorage.getItem("cognome");
   }
   set localCognome(newCognome) {
-    this.nome.next(newCognome)
+    this.cognome.next(newCognome)
     localStorage.setItem("cognome", newCognome);
   }
 
@@ -39,7 +39,7 @@ export class UserInfoService {
     return localStorage.getItem("email");
   }
   set localEmail(newEmail) {
-    this.nome.next(newEmail)
+    this.email.next(newEmail)
     localStorage.setItem("email", newEmail);
   }
 
