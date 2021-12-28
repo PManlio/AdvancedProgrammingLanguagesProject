@@ -24,6 +24,7 @@ dataframe = pd.read_csv('https://raw.githubusercontent.com/pieroit/corso_ml_pyth
 # ora, a noi servono i testi, perché dovremo allenare la nostra IA con questi testi
 # quindi se nella X avremo i testi...
 X = dataframe['text']
+#print(X)
 
 # nella Y avremo il sentimento del testo
 Y = dataframe['tag']
@@ -32,6 +33,7 @@ vect = CountVectorizer(ngram_range=(1,2)) # il countVectorizer lavora col metodo
 X = vect.fit_transform(X) # Dato il corpo di un testo, impara il dizionario dei vocaboli che legge e returna una matrice documento-termine
 
 #print(X[:2])
+#print(type(X))
 
 # una volta vettorizzati i testi, separiamo il dataset in train, test e validation
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
@@ -44,6 +46,8 @@ model.fit(X_train, Y_train)
 p_train = model.predict(X_train)
 p_test = model.predict(X_test)
 
+print(f"le predizioni - train: {p_train}; test: {p_test}")
+
 # misuro l'accuratezza:
 acc_train = accuracy_score(Y_train, p_train)
 acc_test = accuracy_score(Y_test, p_test)
@@ -52,11 +56,21 @@ print(f"Accuracy in training: {acc_train} - Accuracy in test: {acc_test}")
 print(f"i parametri del modello sono {model.get_params(deep=True)}")
 
 # TextFileReader()
+example_text = "I feel like i'm going to die sooner or later. Someday, i feel, i won't be able to breath anymore. I hear the sound of the bell ringing in my ear: it's my funeral. I can hear people crying, sobbing..."
 #example_text = [].append("Quando la festa é finita, la gente ha iniziato a guidare senza essere in condizioni di farlo. Io ho preso la mia macchina con la certezza che ero sobria. Non potevo immaginare, mamma, ció che mi aspettava… qualcosa di inaspettato!")
 #example_text = ["Quando la festa é finita, la gente ha iniziato a guidare senza essere in condizioni di farlo. Io ho preso la mia macchina con la certezza che ero sobria. Non potevo immaginare, mamma, ció che mi aspettava… qualcosa di inaspettato!"]
-example_text = ["I feel like i'm going to die sooner or later. Someday, i feel, i won't be able to breath anymore. I hear the sound of the bell ringing in my ear: it's my funeral. I can hear people crying, sobbing..."]
+#example_text = ["I feel like i'm going to die sooner or later. Someday, i feel, i won't be able to breath anymore. I hear the sound of the bell ringing in my ear: it's my funeral. I can hear people crying, sobbing..."]
+
+# la BernoulliNB si aspetta in input un dataframe, quindi tramite pandas ne dobbiamo creare uno:
+#newDataFrame = pd.DataFrame(columns=['text'])
+#newDataFrame.append([example_text], ignore_index=True)
+newDataFrame = pd.DataFrame([example_text], columns=["text"])
+print(newDataFrame)
+newDataFrame = vect.fit_transform(newDataFrame['text'])
+print(model.predict(newDataFrame))
 
 
-example_text = vect.fit_transform(example_text) # errore di feature
+#example_text = vect.fit_transform(example_text) # errore di feature
+#print(type(example_text))
 #print(example_text)
-print(model.predict(example_text))
+#print(model.predict(example_text[:]))
