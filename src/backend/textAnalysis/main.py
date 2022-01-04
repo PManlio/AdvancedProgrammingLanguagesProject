@@ -1,9 +1,23 @@
 # simple test
-from mongodb import mongoConn
 from typing import Optional
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from starlette.middleware.cors import CORSMiddleware
+# from fastapi.middleware.cors import CORSMiddleware
+
+import mongodb.mongoConn as mongoConn
+from models.mongoFile import DiaryPage
+from models.myBaseModel import BodyItem
 
 app = FastAPI()
+
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*']
+)
 
 myList = ["manlio", "luca", "helenio"]
 
@@ -21,3 +35,8 @@ def getName(index: int, q: Optional[str] = None):
 @app.post("/example/post")
 def postExample():
     mongoConn.simplePost()
+
+@app.post("/diary")
+def postDiary(body: BodyItem):
+    diary = DiaryPage(str(body.mailPaziente), str(body.text))
+    mongoConn.postDiary(diary.getJSONInfo())

@@ -3,6 +3,9 @@ import pymongo
 from dotenv import load_dotenv
 from pathlib import Path
 import os
+import json
+
+from models.mongoFile import DiaryPage
 
 pathToEnv = Path("./.env")
 
@@ -24,3 +27,6 @@ def printConnString():
 def simplePost():
     example = {"nome":"helenio", "cognome":"palmeri"}
     dbcollection.insert_one(example)
+
+def postDiary(JSONdiary: str):
+    dbcollection.insert_one(json.loads(JSONdiary))

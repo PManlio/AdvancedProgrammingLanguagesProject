@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { DiaryService } from 'src/app/services/diary.service';
 import { UserInfoService } from 'src/app/services/user-info.service';
 
 @Component({
@@ -11,10 +12,10 @@ export class ScriviDiarioComponent implements OnInit, OnDestroy {
 
   private subscriptionToRouteParams: any;
   public emailPsicologo: number;
-  private codFisc: string;
+  private email: string;
 
-  constructor(private router: ActivatedRoute, private userInfo: UserInfoService) {
-    this.userInfo.codFisc.subscribe(codFisc => this.codFisc = codFisc);
+  constructor(private router: ActivatedRoute, private userInfo: UserInfoService, private diaryService: DiaryService) {
+    this.userInfo.email.subscribe(email => this.email = email);
   }
 
   ngOnInit(): void {
@@ -28,7 +29,6 @@ export class ScriviDiarioComponent implements OnInit, OnDestroy {
   }
 
   public sendText(text: any) {
-    // inserire qui la query
-    console.log(this.emailPsicologo, this.codFisc, text)
+    this.diaryService.postDiary(this.email, text)
   }
 }
