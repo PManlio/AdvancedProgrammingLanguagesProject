@@ -6,6 +6,8 @@ import os
 import json
 
 from models.mongoFile import DiaryPage
+from models.response import Response
+from metrics.metric import gradientSentiment, meanSentiment
 
 pathToEnv = Path("./.env")
 
@@ -30,3 +32,23 @@ def simplePost():
 
 def postDiary(JSONdiary: str):
     dbcollection.insert_one(json.loads(JSONdiary))
+
+def getAllUserDiariesByUserEmail(email: str):
+    res = dbcollection.find({"emailPaziente": email})
+    return [Response(document["emailPaziente"], document["text"], document["sentiment"], document["date"]) for document in res]
+    # return [(document["emailPaziente"], document["sentiment"], document["date"]) for document in res]
+
+def getAnalysisOfUserSentiment(email: str):
+    res = dbcollection.find({"emailPaziente": email})
+    sentimentArray = [document["sentiment"] for document in res]
+    return meanSentiment([pol["polarity"] for pol in sentimentArray])
+
+def getGradientOfUserSentiment(email: str):
+    res = dbcollection.find({"emailPaziente": email})
+    
+    results = [{"sentiment":document["sentiment"], "date":document['date']} for document in res]
+    sentimentArray = [snt["sentiment"] for snt in results]
+    polarityArray = [pol["polarity"] for pol in sentimentArray]
+    datesArray = [dt["date"] for dt in results]
+    
+    return gradientSentiment(polarityArray, datesArray)
