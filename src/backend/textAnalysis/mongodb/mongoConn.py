@@ -38,6 +38,10 @@ def getAllUserDiariesByUserEmail(email: str):
     return [Response(document["emailPaziente"], document["text"], document["sentiment"], document["date"]) for document in res]
     # return [(document["emailPaziente"], document["sentiment"], document["date"]) for document in res]
 
+def getUserDiaryByDate(email: str, date: str):
+    found = dbcollection.find_one({"emailPaziente": email, "date": date})
+    return Response(found["emailPaziente"], found["text"], found["sentiment"], found["date"])
+
 def getAnalysisOfUserSentiment(email: str):
     res = dbcollection.find({"emailPaziente": email})
     sentimentArray = [document["sentiment"] for document in res]

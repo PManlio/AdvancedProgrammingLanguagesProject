@@ -4,7 +4,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 import mongodb.mongoConn as mongoConn
 from models.mongoFile import DiaryPage
-from models.myBaseModel import BodyItem
+from models.myBaseModel import BodyItem, BodyRequest
 
 app = FastAPI()
 
@@ -34,6 +34,10 @@ def postDiary(body: BodyItem):
 @app.get("/paziente/fulldiary/{email}")
 def getAllDiariesOfPatient(email: str):
     return mongoConn.getAllUserDiariesByUserEmail(email)
+
+@app.get("/paziente/diary/bydate")
+def getUserDiaryByDate(body: BodyRequest):
+    return mongoConn.getUserDiaryByDate(str(body.mailPaziente), str(body.date))
 
 @app.get("/paziente/metrics/meansentiment/{email}")
 def getMeanSentimentOfPatient(email: str):
