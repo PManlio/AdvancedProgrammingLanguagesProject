@@ -1,0 +1,29 @@
+
+<div class="container text-center">
+    <!--Titolo-->
+    <div class="row"><h1>{{title}}</h1></div>
+    <div class="row"><h3>{{subtitle}}</h3></div>
+
+    <hr>
+
+    <ng-container *ngIf="isJwtPresent; then logged else notLogged"></ng-container>
+
+</div>
+
+<ng-template #notLogged>
+    <!--Registrazione - Login-->
+    <div class="row">
+        <div class="col">
+            <app-login></app-login>
+        </div>
+        <div class="col">
+            <app-register></app-register>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #logged>
+    <app-infopsicologo></app-infopsicologo>
+    <router-outlet></router-outlet>
+    <!-- <app-tabellapazienti></app-tabellapazienti> -->
+</ng-template>

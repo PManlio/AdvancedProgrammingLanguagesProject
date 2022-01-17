@@ -68,6 +68,26 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// fmt.Println("HOSTNAME: " + r.Header.Get("referer"))
+	if r.Header.Get("referer") == "http://localhost:4200/" {
+		queryFindPaziente, err := db.Query("SELECT codFisc FROM paziente WHERE codFisc='" + utente.CodFisc + "';")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
+		}
+		var cfu string
+		for queryFindPaziente.Next() {
+			queryFindPaziente.Scan(&cfu)
+		}
+
+		// fmt.Println("[LOGIN] QUI:" + cfu)
+		if cfu == "" {
+			http.Error(w, "Paziente non trovato", http.StatusUnauthorized)
+			return
+		}
+		defer queryFindPaziente.Close()
+	}
+
 	token, err := utente.GenerateToken()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

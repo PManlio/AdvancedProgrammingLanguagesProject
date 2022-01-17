@@ -1,0 +1,41 @@
+<div class="container">
+    <div class="row"><button class="btn btn-secondary" routerLink="/">Torna indietro</button></div>
+    <div class="row">
+        <p>Il sentimento è espresso dalla polarità, un valore compreso in un range [-1, 1], ossia un range che spazia,
+            rispettivamente, dalla negatività alla positività. La Soggettività indica quanto è soggettivo il testo
+            scritto dall'autore, in un range compreso tra [0, 1].</p>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h4>Diario di {{emailPaziente}}</h4>
+        </div>
+        <div class="col">
+            <h4 class="text-info">Sentimento medio: {{sentimentoMedio | number}}</h4>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Data</th>
+                    <th scope="col">Polarità | Soggettività</th>
+                    <th scope="col">Testo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let pagina of infoDiario">
+                    <th scope="row">{{pagina.date | date}}</th>
+                    <td>{{pagina.sentiment.polarity}} | {{pagina.sentiment.subjectivity}}</td>
+                    <td><button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                            Leggi il testo
+                        </button>
+                        <div class="collapse" id="collapseExample">
+                            <div class="card card-body">{{pagina.text}}</div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

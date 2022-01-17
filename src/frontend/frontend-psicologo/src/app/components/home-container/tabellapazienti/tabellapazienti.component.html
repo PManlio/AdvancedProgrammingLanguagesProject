@@ -1,0 +1,28 @@
+<div class="container">
+    <hr>
+    <div class="row">
+        <p>A seguire, i pazienti che stai seguendo</p>
+    </div>
+    <div class="row">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Codice Fiscale</th>
+                    <th scope="col">Nome e Cognome</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Città</th>
+                    <th scope="col">Diario</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let paziente of pazienti">
+                    <th scope="row">{{paziente.CodFisc}}</th>
+                    <td>{{paziente.Nome}} {{paziente.Cognome}}</td>
+                    <td>{{paziente.Email}}</td>
+                    <td>{{paziente.Citta}}</td>
+                    <td><button class="btn btn-primary" [routerLink]="['/diario', { emailPaziente: paziente.Email }]">Diario</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

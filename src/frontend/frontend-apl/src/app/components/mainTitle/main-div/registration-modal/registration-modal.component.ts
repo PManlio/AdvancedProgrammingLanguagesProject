@@ -39,7 +39,12 @@ export class RegistrationModalComponent implements OnInit {
       return
     }
 
+    // console.log(registerForm.valid)
     // proseguire con il registration
-    this.register.register(this.registrationInterface);
+    if (registerForm.valid) {
+      this.register.register(this.registrationInterface);
+    } else {
+      window.alert("Devi riempire tutti i campi")
+    }
   }
 }

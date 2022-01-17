@@ -31,7 +31,7 @@ func PsicologoHandler(psicologoRouter *mux.Router) {
 
 	// gestione pazienti
 	psicologoRouter.HandleFunc("/addpazientebyemail", addPazienteByEmail).Methods("PUT")
-	psicologoRouter.HandleFunc("/getpazienti", getPazientiPsicologo).Methods("GET")
+	psicologoRouter.HandleFunc("/getpazienti", getPazientiPsicologo).Methods("POST")
 	psicologoRouter.HandleFunc("/removepaziente", removePazienteByCodFisc).Methods("PUT")
 }
 

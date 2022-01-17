@@ -74,7 +74,10 @@ func CheckHeader(next http.Handler) http.Handler {
 
 			next.ServeHTTP(w, r)
 
-		case "/login", "/paziente/create", "/psicolgo/create":
+		case "/login", "/paziente/create" /*, "/psicolgo/create"*/ : // la terza stringa non viene riconosciuta
+			next.ServeHTTP(w, r)
+
+		case "/psicologo/create":
 			next.ServeHTTP(w, r)
 
 		default:

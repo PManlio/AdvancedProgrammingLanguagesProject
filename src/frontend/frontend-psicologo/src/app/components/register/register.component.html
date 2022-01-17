@@ -1,0 +1,37 @@
+<div class="container registercnt bg-light">
+    <div class="row"><h4>Regitrati</h4></div>
+    <div class="row">
+        <form ngNativeValidate name="registerForm" #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
+            <div class="row">
+                <input class="form-control" type="text" placeholder="Codice Fiscale" name="codFisc" autocomplete="off" ngModel #codFisc="ngModel" required>
+            </div>
+            <div class="row">
+                <input class="form-control" type="text" placeholder="Nome" name="nome" autocomplete="off" ngModel #nome="ngModel" required>
+            </div>
+            <div class="row">
+                <input class="form-control" type="text" placeholder="Cognome" name="cognome" autocomplete="off" ngModel #cognome="ngModel" required>
+            </div>
+            <div class="row">
+                <input class="form-control" placeholder="email" name="email" ngModel required #email="ngModel" required>
+            </div>
+            <div class="row">
+                <input class="form-control" placeholder="password" type="password" name="password" ngModel required>
+            </div>
+            <div class="row">
+                <input class="form-control" type="password" placeholder="Ripeti Password" name="ripetiPassword" #ripetiPassword ngModel autocomplete="off" required>
+            </div>
+            <div class="row">
+                <input class="form-control" type="text" placeholder="Città" name="citta" autocomplete="off" ngModel citta="ngModel" required>
+            </div>
+            <div class="row">
+                <input class="form-control" type="text" placeholder="Cellulare" name="cellulare" autocomplete="off" ngModel cellulare="ngModel" required>
+            </div>
+            <div class="row">
+                <input class="form-control" type="text" placeholder="Genere" name="genere" autocomplete="off" ngModel genere="ngModel" required>
+            </div>
+            <div class="row">
+                <button class="btn btn-secondary" ng-disabled="registerForm.$invalid">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
