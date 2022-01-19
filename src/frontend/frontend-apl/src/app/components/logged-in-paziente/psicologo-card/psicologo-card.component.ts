@@ -23,6 +23,7 @@ export class PsicologoCardComponent implements OnInit {
   public getPsicologi() {
     this.pazienteService.getAllPsicologiOfPatient(this.codFisc).subscribe(psicologi => {
       this.psicologi = psicologi;
+      console.log(psicologi)
       if (this.psicologi == null || this.psicologi.length == 0) {
         this.isPsicologiFull = false;
       } else this.isPsicologiFull = true;
