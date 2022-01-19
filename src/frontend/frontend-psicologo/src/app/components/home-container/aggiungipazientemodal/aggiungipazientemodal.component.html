@@ -1,0 +1,24 @@
+<button type="button" class="btn btn-primary" (click)="openPopup()">Cerca Paziente</button>
+
+<div class="modal" tabindex="-1" role="dialog" [ngStyle]="{'display':displayStyle}">
+    <div class="modal-dialog bg-light" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Cerca il Paziente inserendo la sua Email</h4>
+            </div>
+            <div class="modal-body">
+                <form #f="ngForm" (ngSubmit)="searchByEmail(f)" novalidate>
+                    <div class="row">
+                        <input class="form-control" placeholder="email" name="email" ngModel required #first="ngModel">
+                    </div>
+                    <div class="row">
+                        <button class="btn btn-primary">Aggiungi</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" (click)="closePopup()">Chiudi</button>
+            </div>
+        </div>
+    </div>
+</div>

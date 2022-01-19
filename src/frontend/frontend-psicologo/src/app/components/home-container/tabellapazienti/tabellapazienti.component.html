@@ -12,6 +12,7 @@
                     <th scope="col">Email</th>
                     <th scope="col">Città</th>
                     <th scope="col">Diario</th>
+                    <th scope="col">Gestione</th>
                 </tr>
             </thead>
             <tbody>
@@ -21,6 +22,7 @@
                     <td>{{paziente.Email}}</td>
                     <td>{{paziente.Citta}}</td>
                     <td><button class="btn btn-primary" [routerLink]="['/diario', { emailPaziente: paziente.Email }]">Diario</button></td>
+                    <td><app-rimuovipaziente-btn [nomeUtente]="paziente.Nome" [codFiscPaziente]="paziente.CodFisc"></app-rimuovipaziente-btn></td>
                 </tr>
             </tbody>
         </table>

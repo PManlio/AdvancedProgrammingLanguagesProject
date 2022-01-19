@@ -34,18 +34,27 @@ def postDiary(JSONdiary: str):
     dbcollection.insert_one(json.loads(JSONdiary))
 
 def getAllUserDiariesByUserEmail(email: str):
-    res = dbcollection.find({"emailPaziente": email})
-    return [Response(document["emailPaziente"], document["text"], document["sentiment"], document["date"]) for document in res]
-    # return [(document["emailPaziente"], document["sentiment"], document["date"]) for document in res]
+    try:
+        res = dbcollection.find({"emailPaziente": email})
+        return [Response(document["emailPaziente"], document["text"], document["sentiment"], document["date"]) for document in res]
+        # return [(document["emailPaziente"], document["sentiment"], document["date"]) for document in res]
+    except pymongo.errors.OperationFailure:
+        return json.loads({"error": "no document found"})
 
 def getUserDiaryByDate(email: str, date: str):
-    found = dbcollection.find_one({"emailPaziente": email, "date": date})
-    return Response(found["emailPaziente"], found["text"], found["sentiment"], found["date"])
+    try:
+        found = dbcollection.find_one({"emailPaziente": email, "date": date})
+        return Response(found["emailPaziente"], found["text"], found["sentiment"], found["date"])
+    except pymongo.errors.OperationFailure:
+        return json.loads({"error": "no document found"})
 
 def getAnalysisOfUserSentiment(email: str):
-    res = dbcollection.find({"emailPaziente": email})
-    sentimentArray = [document["sentiment"] for document in res]
-    return meanSentiment([pol["polarity"] for pol in sentimentArray])
+    try:
+        res = dbcollection.find({"emailPaziente": email})
+        sentimentArray = [document["sentiment"] for document in res]
+        return meanSentiment([pol["polarity"] for pol in sentimentArray])
+    except pymongo.errors.OperationFailure:
+        return json.loads({"error": "no document found"})
 
 def getGradientOfUserSentiment(email: str):
     res = dbcollection.find({"emailPaziente": email})

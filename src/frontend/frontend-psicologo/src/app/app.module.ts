@@ -12,6 +12,8 @@ import { LogoutBtnComponent } from './components/logout-btn/logout-btn.component
 import { TabellapazientiComponent } from './components/home-container/tabellapazienti/tabellapazienti.component';
 import { InfopsicologoComponent } from './components/home-container/infopsicologo/infopsicologo.component';
 import { DiarioComponent } from './components/home-container/diario/diario.component';
+import { RimuovipazienteBtnComponent } from './components/home-container/rimuovipaziente-btn/rimuovipaziente-btn.component';
+import { AggiungipazientemodalComponent } from './components/home-container/aggiungipazientemodal/aggiungipazientemodal.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,9 @@ import { DiarioComponent } from './components/home-container/diario/diario.compo
     LogoutBtnComponent,
     TabellapazientiComponent,
     InfopsicologoComponent,
-    DiarioComponent
+    DiarioComponent,
+    RimuovipazienteBtnComponent,
+    AggiungipazientemodalComponent,
   ],
   imports: [
     BrowserModule,

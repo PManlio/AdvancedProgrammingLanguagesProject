@@ -437,8 +437,8 @@ func addPazienteByEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// prendo il codice fiscale del paziente tramite la sua email
-	querySelectPaziente, err := db.Query("SELECT codFisc FROM utente WHERE " +
-		"email='" + addInfo.Email + "';")
+	querySelectPaziente, err := db.Query("SELECT utente.codFisc FROM utente INNER JOIN paziente ON utente.codFisc = paziente.codFisc WHERE " +
+		"utente.email='" + addInfo.Email + "';")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return

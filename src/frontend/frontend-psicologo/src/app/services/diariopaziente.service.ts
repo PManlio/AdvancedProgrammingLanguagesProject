@@ -9,7 +9,7 @@ import { InfoDiario } from '../interfaces/infodiario';
 export class DiariopazienteService {
 
   private diaryServerUrl: string = `${myEnv.textServerUrl}/paziente`;
-  private myheaders = {'Content-Type':'application/json'};
+  private myheaders = { 'Content-Type':'application/json' };
 
   constructor(private httpClient: HttpClient) { }
 
@@ -18,6 +18,6 @@ export class DiariopazienteService {
   }
 
   public getSentimentoMedio(email: string) {
-    return this.httpClient.get(`${this.diaryServerUrl}/metrics/meansentiment/${email}`, {headers: this.myheaders})
+    return this.httpClient.get(`${this.diaryServerUrl}/metrics/meansentiment/${email}`, { headers: this.myheaders })
   }
 }
