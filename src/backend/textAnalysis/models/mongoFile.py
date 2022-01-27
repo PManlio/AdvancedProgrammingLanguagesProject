@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath('../sentimentAnalysis'))
 
 from sentimentAnalysis.textBlobAI import sentiment
 
-class DiaryPage(object):
+class DiaryPage:
     def __init__(self, emailPaziente: str, text: str) -> None:
         self.emailPaziente = emailPaziente
         self.text = text

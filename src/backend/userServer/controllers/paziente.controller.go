@@ -70,6 +70,7 @@ func CreatePazient(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println(paziente)
 
 	db := myDBpckg.ConnectToDB()
+	defer myDBpckg.CloseConnectionToDB(db)
 
 	// CONTROLLO SU TABELLA PER VERIFICARE ESISTENZA
 	var isPresent bool
@@ -94,6 +95,7 @@ func CreatePazient(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		defer insert1.Close()
 
 		insert2, err2 := db.Query("INSERT INTO paziente(codFisc, patientOf) VALUES(" + "'" + paziente.Utente.CodFisc + "'" + ", " +
 			"'" + strings.Join(paziente.PatientOf, ",") + "');")
@@ -102,15 +104,12 @@ func CreatePazient(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		defer insert1.Close()
 		defer insert2.Close()
 
 		json.NewEncoder(w).Encode(http.StatusOK)
 
 	}
 
-	defer myDBpckg.CloseConnectionToDB(db)
 }
 
 // Leggi Paziente -
@@ -186,6 +185,7 @@ func getPazientByEmail(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
+	defer query.Close()
 
 	var tempList string
 	// Scan() non può essere eseguita se prima non viene invocata Next()
@@ -204,7 +204,6 @@ func getPazientByEmail(w http.ResponseWriter, r *http.Request) {
 	// TODO: testare PatientOf[], perché sicuramente il bastardo lo restituisce come una stringa
 	// 		te quindi forse conviene creare una variabile stringa temporanea e poi pusharla nell'array
 	paziente.PatientOf = utils.GenerateArray(&tempList)
-	defer query.Close()
 
 	json.NewEncoder(w).Encode(paziente)
 }
@@ -407,6 +406,8 @@ func addPsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
+	defer queryListaPsicologi.Close()
+
 	for queryListaPsicologi.Next() {
 		queryListaPsicologi.Scan(&elencoEmailPsicologiStringa)
 		// quando ne si fa una GET (vedi funzioni soprastanti), la stringa "patientOf" viene parsata come array grazie alla funzione che ho scritto in utils/arrayGen.go
@@ -422,7 +423,6 @@ func addPsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	elencoEmailPsicologiStringa = addInfo.Email + "," + elencoEmailPsicologiStringa
-	defer queryListaPsicologi.Close()
 
 	// query per aggiornare il paziente
 	queryUpdatePaziente, err := db.Query("UPDATE paziente SET patientOf=" + "'" + elencoEmailPsicologiStringa /* strings.Join(elencoEmailPsicologi, ",") */ + "' WHERE " +

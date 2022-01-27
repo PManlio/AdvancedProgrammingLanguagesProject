@@ -142,6 +142,7 @@ func getPsicologoByCodFisc(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 	}
+	defer query.Close()
 
 	var tempList string
 	// Scan() non può essere eseguita se prima non viene invocata Next()
@@ -161,7 +162,6 @@ func getPsicologoByCodFisc(w http.ResponseWriter, r *http.Request) {
 	// TODO: testare Pazienti[], perché sicuramente il bastardo lo restituisce come una stringa
 	// 		te quindi forse conviene creare una variabile stringa temporanea e poi pusharla nell'array
 	psicologo.Pazienti = utils.GenerateArray(&tempList)
-	defer query.Close()
 
 	json.NewEncoder(w).Encode(psicologo)
 }
@@ -190,6 +190,7 @@ func getPsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
+	defer query.Close()
 
 	var tempList string
 	// Scan() non può essere eseguita se prima non viene invocata Next()
@@ -208,7 +209,6 @@ func getPsicologoByEmail(w http.ResponseWriter, r *http.Request) {
 	// TODO: testare Pazienti[], perché sicuramente il bastardo lo restituisce come una stringa
 	// 		te quindi forse conviene creare una variabile stringa temporanea e poi pusharla nell'array
 	psicologo.Pazienti = utils.GenerateArray(&tempList)
-	defer query.Close()
 
 	json.NewEncoder(w).Encode(psicologo)
 }
@@ -237,6 +237,7 @@ func getPsicologoByPhoneNumber(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
+	defer query.Close()
 
 	var tempList string
 	// Scan() non può essere eseguita se prima non viene invocata Next()
@@ -255,7 +256,6 @@ func getPsicologoByPhoneNumber(w http.ResponseWriter, r *http.Request) {
 	// TODO: testare Pazienti[], perché sicuramente il bastardo lo restituisce come una stringa
 	// 		te quindi forse conviene creare una variabile stringa temporanea e poi pusharla nell'array
 	psicologo.Pazienti = utils.GenerateArray(&tempList)
-	defer query.Close()
 
 	json.NewEncoder(w).Encode(psicologo)
 }
