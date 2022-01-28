@@ -9,6 +9,11 @@ def dateTimeToInteger(strdate: str) -> int:
 def meanSentiment(sentiment: list):
     return {"averageSentiment": np.average(sentiment)}
 
+
+"""
+    Tentativo di metrica aggiuntiva, non aggiunto al funzionamento del server TextAnalysis
+    I valori prodotti dall'output sono troppo piccoli per essere letti correttamente;
+"""
 def gradientSentiment(sentiment: list, dates: list):
     # trasformo la lista di date in una lista di interi
     # ne prendo il primo elemento e l'ultimo e faccio: ultimo - primo

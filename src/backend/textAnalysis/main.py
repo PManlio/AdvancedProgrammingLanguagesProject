@@ -43,6 +43,7 @@ def getUserDiaryByDate(body: BodyRequest):
 def getMeanSentimentOfPatient(email: str):
     return mongoConn.getAnalysisOfUserSentiment(email)
 
+# Non chiamare
 @app.get("/paziente/metrics/gradientsentiment/{email}")
 def getGradientSentimentOfPatient(email: str):
     return mongoConn.getGradientOfUserSentiment(email)
